@@ -25,7 +25,7 @@ import re
 from .dom_tag import dom_tag
 
 try:
-  basestring = basestring
+  basestring = basestring # type: ignore
 except NameError:
   basestring = str
   unichr = chr

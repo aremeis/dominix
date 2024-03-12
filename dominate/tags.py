@@ -1,5 +1,5 @@
 '''
-HTML tag classes.
+HTMX tag classes.
 '''
 __license__ = '''
 This file is part of Dominate.
@@ -18,92 +18,445 @@ You should have received a copy of the GNU Lesser General
 Public License along with Dominate.  If not, see
 <http://www.gnu.org/licenses/>.
 '''
+import json
 from .dom_tag  import dom_tag, attr, get_current
 from .dom1core import dom1core
 
 try:
-  basestring = basestring
+  basestring = basestring # type: ignore
 except NameError: # py3
   basestring = str
   unicode = str
 
 underscored_classes = set(['del', 'input', 'map', 'object'])
 
-# Tag attributes
-_ATTR_GLOBAL = set([
-  'accesskey', 'class', 'class', 'contenteditable', 'contextmenu', 'dir',
-  'draggable', 'id', 'item', 'hidden', 'lang', 'itemprop', 'spellcheck',
-  'style', 'subject', 'tabindex', 'title'
-])
-_ATTR_EVENTS = set([
-  'onabort', 'onblur', 'oncanplay', 'oncanplaythrough', 'onchange', 'onclick',
-  'oncontextmenu', 'ondblclick', 'ondrag', 'ondragend', 'ondragenter',
-  'ondragleave', 'ondragover', 'ondragstart', 'ondrop', 'ondurationchange',
-  'onemptied', 'onended', 'onerror', 'onfocus', 'onformchange', 'onforminput',
-  'oninput', 'oninvalid', 'onkeydown', 'onkeypress', 'onkeyup', 'onload',
-  'onloadeddata', 'onloadedmetadata', 'onloadstart', 'onmousedown',
-  'onmousemove', 'onmouseout', 'onmouseover', 'onmouseup', 'onmousewheel',
-  'onpause', 'onplay', 'onplaying', 'onprogress', 'onratechange',
-  'onreadystatechange', 'onscroll', 'onseeked', 'onseeking', 'onselect',
-  'onshow', 'onstalled', 'onsubmit', 'onsuspend', 'ontimeupdate',
-  'onvolumechange', 'onwaiting'
-])
 
+_DICT_ATTRS = set(["hx-on", "hx-vals", "hx-headers"])
 
-ERR_ATTRIBUTE = 'attributes'
-ERR_CONTEXT = 'context'
-ERR_CONTENT = 'content'
+# This would make declaring properties a breeze, but unfortunately VS Code won't display the docstring... :(
+# def _attr_prop(attr, doc=None):
+#     def getter(attr):
+#         def g(self):
+#             return self.attributes.get(attr, None)
+#         return g
+#     def setter(attr):
+#         def s(self, value):
+#             self.attributes[attr] = value
+#         return s
+#     return property(getter(attr), setter(attr), doc=doc)
+  
 
+# Constants for use with hx_swap
+
+HX_SWAP_INNER_HTML = "innerHtml"    # Replace the inner html of the target element
+HX_SWAP_OUTER_HTML = "outerHTML"    # Replace the entire target element with the response
+HX_SWAP_BEFOREBEGIN = "beforebegin" # Insert the response before the target element
+HX_SWAP_AFGERBEGIN = "afterbegin"   # Insert the response before the first child of the target element
+HX_SWAP_BEFOREEND = "beforeend"     # Insert the response after the last child of the target element
+HX_SWAP_AFTEREND = "afterend"       # Insert the response after the target element
+HX_SWAP_DELETE = "delete"           # Deletes the target element regardless of the response
+HX_SWAP_NONE = "none"               # Does not append content from response (out of band items will still be processed).
 
 class html_tag(dom_tag, dom1core):
-  def __init__(self, *args, **kwargs):
-    '''
-    Creates a new html tag instance.
-    '''
-    super(html_tag, self).__init__(*args, **kwargs)
+    
+    def __init__(self,
+                  *args, 
+                  hx_get:str=None,
+                  hx_post:str=None,
+                  hx_on:dict[str, str]=None,
+                  hx_push_url:str|bool=None,
+                  hx_select:str=None,
+                  hx_select_oob:str=None,
+                  hx_swap:str=None,
+                  hx_swap_oob:str|bool=None,
+                  hx_target:str=None,
+                  hx_trigger:str=None,
+                  hx_vals:dict[str, str]=None,
+                  hx_boost:bool=None,
+                  hx_confirm:str=None,
+                  hx_delete:str=None,
+                  hx_disable:bool=None,
+                  hx_disable_elt:str=None,
+                  hx_disinherit:str=None,
+                  hx_encoding:str=None,
+                  hx_ext:str=None,
+                  hx_headers:dict[str, str]=None,
+                  hx_history:bool=None,
+                  hx_history_elt:str=None,
+                  hx_include:str=None,
+                  hx_indicator:str=None,
+                  hx_params:str=None,
+                  hx_patch:str=None,
+                  hx_preserve:bool=None,
+                  hx_prompt:str=None,
+                  hx_put:str=None,
+                  hx_replace_url:str|bool=None,
+                  hx_request:str=None,
+                  hx_sync:str=None,
+                  hx_validate:bool=None,
+                  **kwargs):
+        '''
+        Creates a new tag. Child tags should be passed as arguments and attributes
+        should be passed as keyword arguments.
 
+        There is a non-rendering attribute which controls how the tag renders:
 
-  # def validate(self):
-  #   '''
-  #   Validate the tag. This will check the attributes, context, and contents and
-  #   emit tuples in the form of: element, message.
-  #   '''
-  #   errors = []
+        * `__inline (bool)` - If True renders all children tags on the same line.
+        * `hx_get (str)` - Issues a GET to the specified URL [hx-get](https://htmx.org/attributes/hx-get/)
+        * `hx_post (str)` - Issues a POST to the specified URL [hx-post](https://htmx.org/attributes/hx-post/)
+        * `hx_on (dict[str, str])` - Handle events with inline scripts on elements [hx-on](https://htmx.org/attributes/hx-on/)
+        * `hx_push_url (str|bool)` - Push a URL into the browser location bar to create history [hx-push-url](https://htmx.org/attributes/hx-push-url/)
+        * `hx_select (str)` - Select content to swap in from a response [hx-select](https://htmx.org/attributes/hx-select/)
+        * `hx_select_oob (str)` - Select content to swap in from a response, somewhere other than the target (out of band) [hx-select-oob](https://htmx.org/attributes/hx-select-oob/)
+        * `hx_swap (str)` - Select content to swap in from a response [hx-swap](https://htmx.org/attributes/hx-swap/)
+        * `hx_swap_oob (str|bool)` - Select content to swap in from a response, somewhere other than the target (out of band) [hx-swap-oob](https://htmx.org/attributes/hx-swap-oob/)
+        * `hx_target (str)` - Specifies the target element to be swapped [hx-target](https://htmx.org/attributes/hx-target/)
+        * `hx_trigger (str)` - Specifies the event that triggers the request [hx-trigger](https://htmx.org/attributes/hx-trigger/)
+        * `hx_vals (dict[str, str])` - Add values to submit with the request (JSON format) [hx-vals](https://htmx.org/attributes/hx-vals/)
+        * `hx_boost (bool)` - Add progressive enhancement for links and forms [hx-boost](https://htmx.org/attributes/hx-boost/)
+        * `hx_confirm (str)` - Shows a confirm() dialog before issuing a request [hx-confirm](https://htmx.org/attributes/hx-confirm/)
+        * `hx_delete (str)` - Issues a DELETE to the specified URL [hx-delete](https://htmx.org/attributes/hx-delete/)
+        * `hx_disable (bool)` - Disables htmx processing for the given node and any children nodes [hx-disable](https://htmx.org/attributes/hx-disable/)
+        * `hx_disable_elt (str)` - Adds the disabled attribute to the specified elements while a request is in fligh [hx-disable-elt](https://htmx.org/attributes/hx-disable-elt/)
+        * `hx_disinherit (dict[str, str])` - Control and disable automatic attribute inheritance for child nodes [hx-disinherit](https://htmx.org/attributes/hx-disinherit/)
+        * `hx_encoding (str)` - changes the request encoding type [hx-encoding](https://htmx.org/attributes/hx-encoding/)
+        * `hx_ext (str)` - Extensions to use for this element [hx-ext](https://htmx.org/attributes/hx-ext/)
+        * `hx_headers (dict[str, str])` - Adds to the headers that will be submitted with the request [hx-headers](https://htmx.org/attributes/hx-headers/)
+        * `hx_history (bool)` - Prevent sensitive data being saved to the history cache [hx-history](https://htmx.org/attributes/hx-history/)
+        * `hx_history_elt (str)` - The element to snapshot and restore during history navigation [hx-history-elt](https://htmx.org/attributes/hx-history-elt/)
+        * `hx_include (str)` - Include additional data in requests [hx-include](https://htmx.org/attributes/hx-include/)
+        * `hx_indicator (str)` - The element to put the htmx-request class on during the request [hx-indicator](https://htmx.org/attributes/hx-indicator/)
+        * `hx_params (str)` - Filters the parameters that will be submitted with a request [hx-params](https://htmx.org/attributes/hx-params/)
+        * `hx_patch (str)` - Issues a PATCH to the specified URL [hx-patch](https://htmx.org/attributes/hx-patch/)
+        * `hx_preserve (bool)` - Specifies elements to keep unchanged between requests [hx-preserve](https://htmx.org/attributes/hx-preserve/)
+        * `hx_prompt (str)` - Shows a prompt() before issuing a request [hx-prompt](https://htmx.org/attributes/hx-prompt/)
+        * `hx_put (str)` - Issues a PUT to the specified URL [hx-put](https://htmx.org/attributes/hx-put/)
+        * `hx_replace_url (str|bool)` - Replace the URL in the browser location bar [hx-replace-url](https://htmx.org/attributes/hx-replace-url/)
+        * `hx_request (str)` - Configures various aspects of the request [hx-request](https://htmx.org/attributes/hx-request/)
+        * `hx_sync (str)` - Control the sync behavior of the request [hx-sync](https://htmx.org/attributes/hx-sync/)
+        * `hx_validate (bool)` - Force elements to validate themselves before a request [hx-validate](https://htmx.org/attributes/hx-validate/)
+        * `**kwargs` - Additional attributes to set on the tag.        
+        '''
+        super(html_tag, self).__init__(
+            *args, 
+            hx_get = hx_get,
+            hx_post = hx_post,
+            hx_on = hx_on,
+            hx_push_url = hx_push_url,
+            hx_select = hx_select,
+            hx_select_oob = hx_select_oob,
+            hx_swap = hx_swap,
+            hx_swap_oob = hx_swap_oob,
+            hx_target = hx_target,
+            hx_trigger = hx_trigger,
+            hx_vals = hx_vals,
+            hx_boost = hx_boost,
+            hx_confirm = hx_confirm,
+            hx_delete = hx_delete,
+            hx_disable = hx_disable,
+            hx_disable_elt = hx_disable_elt,
+            hx_disinherit = hx_disinherit,
+            hx_encoding = hx_encoding,
+            hx_ext = hx_ext,
+            hx_headers = hx_headers,
+            hx_history = hx_history,
+            hx_history_elt = hx_history_elt,
+            hx_include = hx_include,
+            hx_indicator = hx_indicator,
+            hx_params = hx_params,
+            hx_patch = hx_patch,
+            hx_preserve = hx_preserve,
+            hx_prompt = hx_prompt,
+            hx_put = hx_put,
+            hx_replace_url = hx_replace_url,
+            hx_request = hx_request,
+            hx_sync = hx_sync,
+            hx_validate = hx_validate,
+            **kwargs)
+    
+    
+    def _all_attribute_items(self):
+        all = [(k, v) 
+               for k, v in super()._all_attribute_items() 
+               if k != "hx-on" and k not in _DICT_ATTRS]
+        for attr in _DICT_ATTRS:
+            dict = self.attributes.get(attr, {})
+            if dict:
+                if attr == "hx-on":
+                    all += [(f"hx-on:{k}", v) for k, v in self.attributes.get("hx-on", {}).items()]
+                else:
+                    all.append((attr, json.dumps(dict)))
+        return all
+    
+  
+    # Core Attributes
 
-  #   errors.extend(self.validate_attributes())
-  #   errors.extend(self.validate_context())
-  #   errors.extend(self.validate_content())
+    @property
+    def hx_get(self) -> str:
+        """Issues a GET to the specified URL. [hx-get](https://htmx.org/attributes/hx-get/)"""
+        return self.attributes.get("hx-get", None)
+    @hx_get.setter
+    def hx_get(self, value:str):
+        self.attributes["hx-get"] = value
 
-  #   return errors
+    @property
+    def hx_post(self) -> str:
+        """Issues a POST to the specified URL. [hx-post](https://htmx.org/attributes/hx-post/)"""
+        return self.attributes.get("hx-post", None)
+    @hx_post.setter
+    def hx_post(self, value:str):
+        self.attributes["hx-post"] = value
 
-  # def validate_attributes(self):
-  #   '''
-  #   Validate the tag attributes.
-  #   '''
-  #   return []
+    @property
+    def hx_on(self) -> dict[str, str]:
+        """Handle events with inline scripts on elements. [hx-on](https://htmx.org/attributes/hx-on/)"""
+        return self.attributes.get("hx-on", {})
+    @hx_on.setter
+    def hx_on(self, value:dict[str, str]):
+        self.attributes["hx-on"] = value
+        
+    @property
+    def hx_push_url(self) -> str|bool:
+        """Push a URL into the browser location bar to create history. [hx-push-url](https://htmx.org/attributes/hx-push-url/)"""
+        return self.attributes.get("hx-push-url", None)
+    @hx_push_url.setter
+    def hx_push_url(self, value:str|bool):
+        self.attributes["hx-push-url"] = value
 
-  # def validate_context(self):
-  #   '''
-  #   Validate the tag context.
-  #   '''
-  #   return []
+    @property
+    def hx_select(self) -> str:
+        """Select content to swap in from a response. [hx-select](https://htmx.org/attributes/hx-select/)"""
+        return self.attributes.get("hx-select", None)
+    @hx_select.setter
+    def hx_select(self, value:str):
+        self.attributes["hx-select"] = value
 
-  # def validate_content(self):
-  #   '''
-  #   Validate the content of the tag.
-  #   '''
-  #   return []
+    @property
+    def hx_select_oob(self) -> str:
+        """Select content to swap in from a response, somewhere other than the target (out of band). [hx-select-oob](https://htmx.org/attributes/hx-select-oob/)"""
+        return self.attributes.get("hx-select-oob", None)
+    @hx_select_oob.setter
+    def hx_select_oob(self, value:str):
+        self.attributes["hx-select-oob"] = value
 
-  # def _check_attributes(self, *attrs):
-  #   valid = set([])
-  #   for attr in attrs:
-  #     if hasattr(attr, '__iter__'):
-  #       valid |= set(attr)
-  #     else:
-  #       valid.add(attr)
-  #   return set(list(self.attributes.iterkeys())) - valid
+    @property
+    def hx_swap(self) -> str:
+        """Select content to swap in from a response. [hx-swap](https://htmx.org/attributes/hx-swap/)"""
+        return self.attributes.get("hx-swap", None)
+    @hx_swap.setter
+    def hx_swap(self, value:str):
+        self.attributes["hx-swap"] = value
 
+    @property
+    def hx_swap_oob(self) -> str|bool:
+        """Select content to swap in from a response, somewhere other than the target (out of band). [hx-swap-oob](https://htmx.org/attributes/hx-swap-oob/)"""
+        return self.attributes.get("hx-swap-oob", None)
+    @hx_swap_oob.setter
+    def hx_swap_oob(self, value:str|bool):
+        self.attributes["hx-swap-oob"] = value
 
+    @property
+    def hx_target(self) -> str:
+        """Specifies the target element to be swapped. [hx-target](https://htmx.org/attributes/hx-target/)"""
+        return self.attributes.get("hx-target", None)
+    @hx_target.setter
+    def hx_target(self, value:str):
+        self.attributes["hx-target"] = value
+
+    @property
+    def hx_trigger(self) -> str:
+        """Specifies the event that triggers the request. [hx-trigger](https://htmx.org/attributes/hx-trigger/)"""
+        return self.attributes.get("hx-trigger", None)
+    @hx_trigger.setter
+    def hx_trigger(self, value:str):
+        self.attributes["hx-trigger"] = value
+    
+    @property
+    def hx_vals(self) -> dict[str, str]:
+        """Add values to submit with the request (JSON format). [hx-vals](https://htmx.org/attributes/hx-vals/)"""
+        return self.attributes.get("hx-vals", {})
+    @hx_vals.setter
+    def hx_vals(self, value:dict[str, str]):
+        self.attributes["hx-vals"] = value
+
+    # Additional Attributes
+        
+    @property
+    def hx_boost(self) -> bool:
+        """Add progressive enhancement for links and forms. [hx-boost](https://htmx.org/attributes/hx-boost/)"""
+        return self.attributes.get("hx-boost", None)
+    @hx_boost.setter
+    def hx_boost(self, value:bool):
+        self.attributes["hx-boost"] = value
+
+    @property
+    def hx_confirm(self) -> str:
+        """Shows a confirm() dialog before issuing a request. [hx-confirm](https://htmx.org/attributes/hx-confirm/)"""
+        return self.attributes.get("hx-confirm", None)
+    @hx_confirm.setter
+    def hx_confirm(self, value:str):
+        self.attributes["hx-confirm"] = value
+
+    @property
+    def hx_delete(self) -> str:
+        """Issues a DELETE to the specified URL. [hx-delete](https://htmx.org/attributes/hx-delete/)"""
+        return self.attributes.get("hx-delete", None)
+    @hx_delete.setter
+    def hx_delete(self, value:str):
+        self.attributes["hx-delete"] = value
+
+    @property
+    def hx_disable(self) -> bool:
+        """Disables htmx processing for the given node and any children nodes. [hx-disable](https://htmx.org/attributes/hx-disable/)"""
+        return self.attributes.get("hx-disable", None)
+    @hx_disable.setter
+    def hx_disable(self, value:bool):
+        self.attributes["hx-disable"] = value
+
+    @property
+    def hx_disable_elt(self) -> str:
+        """Adds the disabled attribute to the specified elements while a request is in fligh. [hx-disable-elt](https://htmx.org/attributes/hx-disable-elt/)"""
+        return self.attributes.get("hx-disable-elt", None)
+    @hx_disable_elt.setter
+    def hx_disable_elt(self, value:str):
+        self.attributes["hx-disable-elt"] = value
+
+    @property
+    def hx_disinherit(self) -> dict[str, str]:
+        """Control and disable automatic attribute inheritance for child nodes. [hx-disinherit](https://htmx.org/attributes/hx-disinherit/)"""
+        return self.attributes.get("hx-disinherit", {})
+    @hx_disinherit.setter
+    def hx_disinherit(self, value:dict[str, str]):
+        self.attributes["hx-disinherit"] = value
+
+    @property
+    def hx_encoding(self) -> str:
+        """changes the request encoding type. [hx-encoding](https://htmx.org/attributes/hx-encoding/)"""
+        return self.attributes.get("hx-encoding", None)
+    @hx_encoding.setter
+    def hx_encoding(self, value:str):
+        self.attributes["hx-encoding"] = value
+
+    @property
+    def hx_ext(self) -> str:
+        """Extensions to use for this element. [hx-ext](https://htmx.org/attributes/hx-ext/)"""
+        return self.attributes.get("hx-ext", None)
+    @hx_ext.setter
+    def hx_ext(self, value:str):
+        self.attributes["hx-ext"] = value
+
+    @property
+    def hx_headers(self) -> dict[str, str]:
+        """Adds to the headers that will be submitted with the request. [hx-headers](https://htmx.org/attributes/hx-headers/)"""
+        return self.attributes.get("hx-headers", {})
+    @hx_headers.setter
+    def hx_headers(self, value:dict[str, str]):
+        self.attributes["hx-headers"] = value
+
+    @property
+    def hx_history(self) -> bool:
+        """Prevent sensitive data being saved to the history cache. [hx-history](https://htmx.org/attributes/hx-history/)"""
+        return self.attributes.get("hx-history", None)
+    @hx_history.setter
+    def hx_history(self, value:bool):
+        self.attributes["hx-history"] = value
+
+    @property
+    def hx_history_elt(self) -> str:
+        """The element to snapshot and restore during history navigation. [hx-history-elt](https://htmx.org/attributes/hx-history-elt/)"""
+        return self.attributes.get("hx-history-elt", None)
+    @hx_history_elt.setter
+    def hx_history_elt(self, value:str):
+        self.attributes["hx-history-elt"] = value
+
+    @property
+    def hx_include(self) -> str:
+        """Include additional data in requests. [hx-include](https://htmx.org/attributes/hx-include/)"""
+        return self.attributes.get("hx-include", None)
+    @hx_include.setter
+    def hx_include(self, value:str):
+        self.attributes["hx-include"] = value
+
+    @property
+    def hx_indicator(self) -> str:
+        """The element to put the htmx-request class on during the request. [hx-indicator](https://htmx.org/attributes/hx-indicator/)"""
+        return self.attributes.get("hx-indicator", None)
+    @hx_indicator.setter
+    def hx_indicator(self, value:str):
+        self.attributes["hx-indicator"] = value
+
+    @property
+    def hx_params(self) -> str:
+        """Filters the parameters that will be submitted with a request. [hx-params](https://htmx.org/attributes/hx-params/)"""
+        return self.attributes.get("hx-params", None)
+    @hx_params.setter
+    def hx_params(self, value:str):
+        self.attributes["hx-params"] = value
+
+    @property
+    def hx_patch(self) -> str:
+        """Issues a PATCH to the specified URL. [hx-patch](https://htmx.org/attributes/hx-patch/)"""
+        return self.attributes.get("hx-patch", None)
+    @hx_patch.setter
+    def hx_patch(self, value:str):
+        self.attributes["hx-patch"] = value
+
+    @property
+    def hx_preserve(self) -> bool:
+        """Specifies elements to keep unchanged between requests. [hx-preserve](https://htmx.org/attributes/hx-preserve/)"""
+        return self.attributes.get("hx-preserve", None)
+    @hx_preserve.setter
+    def hx_preserve(self, value:bool):
+        self.attributes["hx-preserve"] = value
+
+    @property
+    def hx_prompt(self) -> str:
+        """Shows a prompt() before issuing a request. [hx-prompt](https://htmx.org/attributes/hx-prompt/)"""
+        return self.attributes.get("hx-prompt", None)
+    @hx_prompt.setter
+    def hx_prompt(self, value:str):
+        self.attributes["hx-prompt"] = value
+
+    @property
+    def hx_put(self) -> str:
+        """Issues a PUT to the specified URL. [hx-put](https://htmx.org/attributes/hx-put/)"""
+        return self.attributes.get("hx-put", None)
+    @hx_put.setter
+    def hx_put(self, value:str):
+        self.attributes["hx-put"] = value
+
+    @property
+    def hx_replace_url(self) -> str|bool:
+        """Replace the URL in the browser location bar. [hx-replace-url](https://htmx.org/attributes/hx-replace-url/)"""
+        return self.attributes.get("hx-replace-url", None)
+    @hx_replace_url.setter
+    def hx_replace_url(self, value:str|bool):
+        self.attributes["hx-replace-url"] = value
+
+    @property
+    def hx_request(self) -> str:
+        """Configures various aspects of the request. [hx-request](https://htmx.org/attributes/hx-request/)"""
+        return self.attributes.get("hx-request", None)
+    @hx_request.setter
+    def hx_request(self, value:str):
+        self.attributes["hx-request"] = value
+
+    @property
+    def hx_sync(self) -> str:
+        """Control the sync behavior of the request. [hx-sync](https://htmx.org/attributes/hx-sync/)"""
+        return self.attributes.get("hx-sync", None)
+    @hx_sync.setter
+    def hx_sync(self, value:str):
+        self.attributes["hx-sync"] = value
+
+    @property
+    def hx_validate(self) -> bool:
+        """Force elements to validate themselves before a request. [hx-validate](https://htmx.org/attributes/hx-validate/)"""
+        return self.attributes.get("hx-validate", None)
+    @hx_validate.setter
+    def hx_validate(self, value:bool):
+        self.attributes["hx-validate"] = value
+    
 
 ################################################################################
 ############################### Html Tag Classes ###############################
@@ -116,21 +469,6 @@ class html(html_tag):
   The html element represents the root of an HTML document.
   '''
   pass
-  # def validate_attributes(self):
-  #   errors = []
-  #   for invalid in self._check_attributes(_ATTR_GLOBAL, 'manifest'):
-  #     errors.append( (self, ERR_ATTRIBUTE, 'Invalid attribute: "%s"' % invalid) )
-  #   return errors
-
-  # def validate_context(self):
-  #   if self.parent is not None and not isinstance(self.parent, iframe):
-  #     return [(self, ERR_CONTEXT, 'Must be root element or child of an <iframe>')]
-  #   return []
-
-  # def validate_content(self):
-  #   if len(self) != 2 or not isinstance(self[0], head) or not isinstance(self[1], body):
-  #     return [(self, ERR_CONTENT, 'Children must be <head> and then <body>.')]
-  #   return []
 
 
 # Document metadata

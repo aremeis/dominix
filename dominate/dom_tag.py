@@ -35,13 +35,13 @@ except ImportError: # pragma: no cover
   from collections import Callable
 
 try:
-  basestring = basestring
+  basestring = basestring # type: ignore
 except NameError: # py3 # pragma: no cover
   basestring = str
   unicode = str
 
 try:
-  import greenlet
+  import greenlet # type: ignore
 except ImportError:
   greenlet = None
 
@@ -129,7 +129,8 @@ class dom_tag(object):
       self.add(*args)
 
     for attr, value in kwargs.items():
-      self.set_attribute(*type(self).clean_pair(attr, value))
+      if value is not None:
+        self.set_attribute(*type(self).clean_pair(attr, value))
 
     self._ctx = None
     self._add_to_ctx()
@@ -355,6 +356,10 @@ class dom_tag(object):
     return u''.join(data)
 
 
+  # Redefined in html_tag to handle special hx- attributes
+  def _all_attribute_items(self):
+    return self.attributes.items()
+
   def _render(self, sb, indent_level, indent_str, pretty, xhtml):
     pretty = pretty and self.is_pretty
 
@@ -369,9 +374,20 @@ class dom_tag(object):
     sb.append('<')
     sb.append(name)
 
-    for attribute, value in sorted(self.attributes.items()):
-      if value in (False, None):
+    for attribute, value in sorted(self._all_attribute_items()):
+      if value is None:
         continue
+      elif attribute.startswith('hx-'):
+        # HTMX seems to favor "true" and "false"
+        if value is True:
+          value = 'true'
+        elif value is False:
+          value = 'false'
+      elif value is False:
+        continue
+      elif value is True:
+        value = attribute
+
       val = unicode(value) if isinstance(value, util.text) and not value.escape else util.escape(unicode(value), True)
       sb.append(' %s="%s"' % (attribute, val))
 
@@ -445,7 +461,7 @@ class dom_tag(object):
       attribute = attribute[1:]
 
     # Workaround for dash
-    special_prefix = any([attribute.startswith(x) for x in ('data_', 'aria_')])
+    special_prefix = any([attribute.startswith(x) for x in ('data_', 'aria_', 'hx_')])
     if attribute in set(['http_equiv']) or special_prefix:
       attribute = attribute.replace('_', '-').lower()
 
@@ -466,18 +482,28 @@ class dom_tag(object):
     '''
     attribute = cls.clean_attribute(attribute)
 
-    # Check for boolean attributes
-    # (i.e. selected=True becomes selected="selected")
-    if value is True:
-      value = attribute
-
-    # Ignore `if value is False`: this is filtered out in render()
+    # This logic is moved to the render method
+    # 
+    # # Check for boolean attributes
+    # # (i.e. selected=True becomes selected="selected")
+    # if value is True:
+    #   value = attribute
+    #
+    # # Ignore `if value is False`: this is filtered out in render()
 
     return (attribute, value)
 
 
+  def attr(self, *args, **kwargs):
+    dicts = args + (kwargs,)
+    for d in dicts:
+      for attr, value in d.items():
+        self.set_attribute(*dom_tag.clean_pair(attr, value))
+    return self
+  
+
 _get_current_none = object()
-def get_current(default=_get_current_none):
+def get_current(default=_get_current_none) -> dom_tag:
   '''
   get the current tag being used as a with context or decorated function.
   if no context is active, raises ValueError, or returns the default, if provided
@@ -495,11 +521,7 @@ def attr(*args, **kwargs):
   '''
   Set attributes on the current active tag context
   '''
-  c = get_current()
-  dicts = args + (kwargs,)
-  for d in dicts:
-    for attr, value in d.items():
-      c.set_attribute(*dom_tag.clean_pair(attr, value))
+  return get_current().attr(*args, **kwargs)
 
 
 from . import util

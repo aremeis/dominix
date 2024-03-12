@@ -1,6 +1,6 @@
 import pytest
 try:
-    import mock
+    import mock # type: ignore
 except ImportError:
     import unittest.mock as mock
 

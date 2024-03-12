@@ -17,7 +17,7 @@ Public License along with Dominate.  If not, see
 '''
 
 try:
-  basestring = basestring
+  basestring = basestring # type: ignore
 except NameError: # py3
   basestring = str
   unicode = str

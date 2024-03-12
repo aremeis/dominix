@@ -4,7 +4,7 @@ import pytest
 from dominate.util import raw
 
 try:
-  xrange = xrange
+  xrange = xrange # type: ignore
 except NameError:
   xrange = range
 
