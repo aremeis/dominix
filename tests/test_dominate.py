@@ -1,6 +1,6 @@
 
 def test_version():
   import dominix
-  version = '2.9.1'
+  version = '1.0.0'
   assert dominix.version == version
   assert dominix.__version__ == version
