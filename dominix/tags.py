@@ -31,7 +31,7 @@ except NameError: # py3
 underscored_classes = set(['del', 'input', 'map', 'object'])
 
 
-_DICT_ATTRS = set(["hx-on", "hx-vals", "hx-headers"])
+_SPECIAL_ATTRS = set(["class", "style", "hx-on", "hx-vals", "hx-headers"])
 
 # This would make declaring properties a breeze, but unfortunately VS Code won't display the docstring... :(
 # def _attr_prop(attr, doc=None):
@@ -61,6 +61,8 @@ class html_tag(dom_tag, dom1core):
     
     def __init__(self,
                   *args, 
+                  cls:str|list[str]=None,
+                  style:str|dict[str, str]=None,
                   hx_get:str=None,
                   hx_post:str=None,
                   hx_on:dict[str, str]=None,
@@ -102,6 +104,8 @@ class html_tag(dom_tag, dom1core):
         There is a non-rendering attribute which controls how the tag renders:
 
         * `__inline (bool)` - If True renders all children tags on the same line.
+        * `cls` (str|list[str]) - The class attribute. Can be given either as a string or as a list.
+        * `style` (str|dict[str, str]) - The style attribute. Can be given either as a string or as a dictionary.
         * `hx_get (str)` - Issues a GET to the specified URL [hx-get](https://htmx.org/attributes/hx-get/)
         * `hx_post (str)` - Issues a POST to the specified URL [hx-post](https://htmx.org/attributes/hx-post/)
         * `hx_on (dict[str, str])` - Handle events with inline scripts on elements [hx-on](https://htmx.org/attributes/hx-on/)
@@ -139,6 +143,8 @@ class html_tag(dom_tag, dom1core):
         '''
         super(html_tag, self).__init__(
             *args, 
+            cls=cls,
+            style=style,
             hx_get = hx_get,
             hx_post = hx_post,
             hx_on = hx_on,
@@ -178,18 +184,71 @@ class html_tag(dom_tag, dom1core):
     def _all_attribute_items(self):
         all = [(k, v) 
                for k, v in super()._all_attribute_items() 
-               if k != "hx-on" and k not in _DICT_ATTRS]
-        for attr in _DICT_ATTRS:
-            dict = self.attributes.get(attr, {})
-            if dict:
-                if attr == "hx-on":
-                    all += [(f"hx-on:{k}", v) for k, v in self.attributes.get("hx-on", {}).items()]
-                else:
-                    all.append((attr, json.dumps(dict)))
+               if k not in _SPECIAL_ATTRS]
+        for attr in _SPECIAL_ATTRS:
+            if attr == "class":
+                classes = self.attributes.get(attr, [])
+                if isinstance(classes, list):
+                    classes = " ".join(classes)
+                if (classes):
+                    all.append((attr, classes))
+            else:
+                map = self.attributes.get(attr, {})
+                if map:
+                    if attr == "hx-on":
+                        all += [(f"hx-on:{k}", v) for k, v in self.attributes.get("hx-on", {}).items()]
+                    elif attr == "style":
+                        if isinstance(map, dict):
+                            all.append((attr, "; ".join([f"{k}:{v}" for k, v in map.items()])))
+                        else:
+                            all.append((attr, map))
+                    else:
+                        # hx-vals, hx-headers
+                        all.append((attr, json.dumps(map)))
         return all
-    
-  
-    # Core Attributes
+
+
+    # HTML attributes
+
+    @property
+    def cls(self) -> list[str]:
+        """
+        The class attribute of the tag as a list. This property lets you manipulate the
+        class list using Python list operations. The list will be converted to a correct
+        string representation when the tag is rendered.
+        """
+        classes = self.attributes.get("class", [])
+        if isinstance(classes, str):
+            classes = classes.split()
+            self.attributes["class"] = classes
+        return classes
+    @cls.setter
+    def cls(self, value:str|list[str]):
+        self.attributes["class"] = value
+
+    @property
+    def style(self) -> dict:
+        """
+        The style attribute of the tag as a dictionary. This property lets you manipulate the
+        style using Python dictionary operations. The dictionary will be converted to a correct
+        string representation when the tag is rendered.
+        """
+        style = self.attributes.get("style", None)
+        if isinstance(style, str):
+            ret = {}
+            for pair in style.split(";"):
+                k, v = pair.split(":")
+                ret[k.strip()] = v.strip()
+            self.attributes["style"] = ret
+            return ret
+        else:
+            return style
+    @style.setter
+    def hx_get(self, value:str|dict[str, str]):
+        self.attributes["style"] = value
+
+
+    # HTMX Core Attributes
 
     @property
     def hx_get(self) -> str:
@@ -279,7 +338,7 @@ class html_tag(dom_tag, dom1core):
     def hx_vals(self, value:dict[str, str]):
         self.attributes["hx-vals"] = value
 
-    # Additional Attributes
+    # HTMX Additional Attributes
         
     @property
     def hx_boost(self) -> bool:
