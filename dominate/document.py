@@ -20,7 +20,7 @@ from . import tags
 from . import util
 
 try:
-  basestring = basestring
+  basestring = basestring # type: ignore
 except NameError: # py3
   basestring = str
   unicode = str
