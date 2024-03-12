@@ -1,5 +1,27 @@
 from dominix.tags import *
 
+def test_cls():
+    tag = html(cls="foo  bar")
+    assert tag.render() == '<html class="foo  bar"></html>'
+    classes = tag.cls
+    tag.cls.remove("foo")
+    assert tag.render() == '<html class="bar"></html>'
+    classes.remove("bar")
+    assert tag.render() == '<html></html>'
+    classes.extend(["baz", "qux"])
+    assert tag.render() == '<html class="baz qux"></html>'
+    tag.cls = "kaz quux "
+    assert tag.render() == '<html class="kaz quux "></html>'
+
+def test_style():
+    tag = html(style="foo: bar;  baz: qux")
+    assert tag.render() == '<html style="foo: bar;  baz: qux"></html>'
+    style = tag.style
+    del style["foo"]
+    assert tag.render() == '<html style="baz:qux"></html>'
+    tag.style.update({"foo": "bar", "baz": "zab"})
+    assert tag.render() == '<html style="baz:zab; foo:bar"></html>'
+
 def test_hx_on():
     tag = html(hx_on_click="foo()")
     assert tag.render() == '<html hx-on-click="foo()"></html>'
