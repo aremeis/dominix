@@ -1,18 +1,18 @@
 __license__ = '''
-This file is part of Dominate.
+This file is part of Dominix.
 
-Dominate is free software: you can redistribute it and/or modify
+Dominix is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
 published by the Free Software Foundation, either version 3 of
 the License, or (at your option) any later version.
 
-Dominate is distributed in the hope that it will be useful, but
+Dominix is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General
-Public License along with Dominate.  If not, see
+Public License along with Dominix.  If not, see
 <http://www.gnu.org/licenses/>.
 '''
 
@@ -27,7 +27,7 @@ except NameError: # py3
 
 class document(tags.html):
   tagname = 'html'
-  def __init__(self, title='Dominate', doctype='<!DOCTYPE html>', *a, **kw):
+  def __init__(self, title='Dominix', doctype='<!DOCTYPE html>', *a, **kw):
     '''
     Creates a new document instance. Accepts `title` and `doctype`
     '''
@@ -73,4 +73,4 @@ class document(tags.html):
     return super(document, self)._render(sb, *args, **kwargs)
 
   def __repr__(self):
-    return '<dominate.document "%s">' % self.title
+    return '<dominix.document "%s">' % self.title

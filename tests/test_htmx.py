@@ -1,4 +1,4 @@
-from dominate.tags import *
+from dominix.tags import *
 
 def test_hx_on():
     tag = html(hx_on_click="foo()")
@@ -129,4 +129,3 @@ def test_attr():
     assert tag.render() == '<html class="bar" href="bax"></html>'
     tag.attr(cls="baz", href="qux", id="quux")
     assert tag.render() == '<html class="baz" href="qux" id="quux"></html>'
-

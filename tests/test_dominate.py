@@ -1,6 +1,6 @@
 
 def test_version():
-  import dominate
+  import dominix
   version = '2.9.1'
-  assert dominate.version == version
-  assert dominate.__version__ == version
+  assert dominix.version == version
+  assert dominix.__version__ == version

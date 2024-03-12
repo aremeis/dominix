@@ -3,26 +3,26 @@ This module consists of classes specific to HTML5-SVG Elements. In general this 
 - Elements that are not specific to SVG (eg. <a>)
 - Elements that are deprecated
 '''
-from dominate.tags import html_tag
-from dominate.dom_tag import dom_tag
+from dominix.tags import html_tag
+from dominix.dom_tag import dom_tag
 import numbers
 
 
 __license__ = '''
-This file is part of Dominate.
+This file is part of Dominix.
 
-Dominate is free software: you can redistribute it and/or modify
+Dominix is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
 published by the Free Software Foundation, either version 3 of
 the License, or (at your option) any later version.
 
-Dominate is distributed in the hope that it will be useful, but
+Dominix is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General
-Public License along with Dominate.  If not, see
+Public License along with Dominix.  If not, see
 <http://www.gnu.org/licenses/>.
 '''
 

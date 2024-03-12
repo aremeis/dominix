@@ -1,8 +1,8 @@
 from asyncio import gather, run, Semaphore
-from dominate.dom_tag import async_context_id
+from dominix.dom_tag import async_context_id
 from textwrap import dedent
 
-from dominate import tags
+from dominix import tags
 
 # To simulate sleep without making the tests take a hella long time to complete
 # lets use a pair of semaphores to explicitly control when our coroutines run.
