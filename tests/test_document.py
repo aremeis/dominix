@@ -1,5 +1,5 @@
-from dominate import document
-from dominate.tags import *
+from dominix import document
+from dominix.tags import *
 
 def test_doc():
   d = document()
@@ -7,7 +7,7 @@ def test_doc():
 '''<!DOCTYPE html>
 <html>
   <head>
-    <title>Dominate</title>
+    <title>Dominix</title>
   </head>
   <body></body>
 </html>'''
@@ -23,7 +23,7 @@ def test_decorator():
 '''<!DOCTYPE html>
 <html>
   <head>
-    <title>Dominate</title>
+    <title>Dominix</title>
   </head>
   <body>
     <p>Hello World</p>
@@ -40,7 +40,7 @@ def test_bare_decorator():
 '''<!DOCTYPE html>
 <html>
   <head>
-    <title>Dominate</title>
+    <title>Dominix</title>
   </head>
   <body>
     <p>Hello World</p>
@@ -50,7 +50,7 @@ def test_bare_decorator():
 
 def test_title():
   d = document()
-  assert d.title == 'Dominate'
+  assert d.title == 'Dominix'
 
   d = document(title='foobar')
   assert d.title == 'foobar'
@@ -88,7 +88,7 @@ def test_containers():
 '''<!DOCTYPE html>
 <html>
   <head>
-    <title>Dominate</title>
+    <title>Dominix</title>
   </head>
   <body>
     <div>header1</div>
@@ -112,7 +112,7 @@ def test_attributes():
 
 def test_repr():
   d = document(title='foo')
-  assert d.__repr__() == '<dominate.document "foo">'
+  assert d.__repr__() == '<dominix.document "foo">'
 
 if __name__ == '__main__':
   # test_doc()

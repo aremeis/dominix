@@ -1,6 +1,6 @@
 import pytest
 
-from dominate.tags import *
+from dominix.tags import *
 
 def test_dom():
   container = div()

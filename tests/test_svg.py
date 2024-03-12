@@ -1,6 +1,6 @@
-import dominate.svg
-from dominate.tags import *
-from dominate.svg import *
+import dominix.svg
+from dominix.tags import *
+from dominix.svg import *
 
 import pytest
 
@@ -139,7 +139,7 @@ filter_names = ['feBlend', 'feColorMatrix', 'feComponentTransfer', 'feComposite'
 
 def test_filters():
   for name in filter_names:
-    attr = getattr(dominate.svg, name)
+    attr = getattr(dominix.svg, name)
     with filter() as f:
       attr()
     expected = '''<filter>\n  <{0}></{0}>\n</filter>'''.format(name)

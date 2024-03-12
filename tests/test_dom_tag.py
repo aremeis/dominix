@@ -4,11 +4,11 @@ try:
 except ImportError:
     import unittest.mock as mock
 
-from dominate.tags import *
+from dominix.tags import *
 
 
 def test___get_thread_context(monkeypatch):
-    from dominate import dom_tag as sut
+    from dominix import dom_tag as sut
     greenlet = mock.Mock()
     greenlet.getcurrent.return_value = 100
     monkeypatch.setattr(sut, 'greenlet', greenlet)

@@ -1,18 +1,18 @@
 __license__ = '''
-This file is part of Dominate.
+This file is part of Dominix.
 
-Dominate is free software: you can redistribute it and/or modify
+Dominix is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
 published by the Free Software Foundation, either version 3 of
 the License, or (at your option) any later version.
 
-Dominate is distributed in the hope that it will be useful, but
+Dominix is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General
-Public License along with dominate.  If not, see
+Public License along with Dominix.  If not, see
 <http://www.gnu.org/licenses/>.
 '''
 # pylint: disable=bad-whitespace
@@ -20,18 +20,18 @@ Public License along with dominate.  If not, see
 from setuptools import setup
 
 import imp
-_version = imp.load_source("dominate._version", "dominate/_version.py")
+_version = imp.load_source("dominix._version", "dominix/_version.py")
 
 long_description = open('README.md').read()
 
 setup(
-  name    = 'dominate',
+  name    = 'dominix',
   version = _version.__version__,
   author  = 'Tom Flanagan and Jake Wharton',
   author_email = 'tom@zkpq.ca',
   license = 'LGPLv3',
-  url     = 'https://github.com/Knio/dominate/',
-  description      = 'Dominate is a Python library for creating and manipulating HTML documents using an elegant DOM API.',
+  url     = 'https://github.com/Knio/dominix/',
+  description      = 'Dominix is a Python library for creating and manipulating HTML documents using an elegant DOM API.',
   long_description = long_description,
   long_description_content_type='text/markdown',
   keywords         = 'framework templating template html xhtml python html5',
@@ -58,6 +58,6 @@ setup(
     'Topic :: Text Processing :: Markup :: HTML',
   ],
 
-  packages = ['dominate'],
+  packages = ['dominix'],
   include_package_data = True,
 )

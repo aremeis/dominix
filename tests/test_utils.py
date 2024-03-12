@@ -1,11 +1,11 @@
-import dominate
-from dominate.tags import *
-from dominate import util
+import dominix
+from dominix.tags import *
+from dominix import util
 
 
 def test_context():
-  id1 = dominate.dom_tag._get_thread_context()
-  id2 = dominate.dom_tag._get_thread_context()
+  id1 = dominix.dom_tag._get_thread_context()
+  id2 = dominix.dom_tag._get_thread_context()
   assert id1 == id2
 
 def test_include():

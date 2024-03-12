@@ -1,7 +1,7 @@
-import dominate
-from dominate.tags import *
+import dominix
+from dominix.tags import *
 import pytest
-from dominate.util import raw
+from dominix.util import raw
 
 try:
   xrange = xrange # type: ignore
@@ -31,10 +31,10 @@ def test_kwargs():
 def test_repr():
   import re
   d = div()
-  assert repr(d).startswith('<dominate.tags.div at ')
+  assert repr(d).startswith('<dominix.tags.div at ')
   assert repr(d).endswith(' 0 attributes, 0 children>')
   d += [1, {'id':'foo'}]
-  assert repr(d).startswith('<dominate.tags.div at ')
+  assert repr(d).startswith('<dominix.tags.div at ')
   assert repr(d).endswith(' 1 attribute, 1 child>')
 
 
@@ -153,7 +153,7 @@ def test_nested_decorator():
 
 
 def test_text():
-  from dominate.util import text
+  from dominix.util import text
   d = div()
   with d:
     text('Hello World')
@@ -169,7 +169,7 @@ def test_text():
 
 
 def test_raw():
-  from dominate.util import raw
+  from dominix.util import raw
   d = div()
   with d:
     raw('Hello World<br>')
@@ -233,7 +233,7 @@ def test_attribute_dashes():
 
 
 def test_lazy():
-  from dominate import util
+  from dominix import util
   executed = [False]
   def _lazy():
     executed[0] = True
