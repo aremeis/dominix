@@ -269,7 +269,7 @@ class html_tag(dom_tag, dom1core):
     @property
     def hx_on(self) -> dict[str, str]:
         """Handle events with inline scripts on elements. [hx-on](https://htmx.org/attributes/hx-on/)"""
-        return self.attributes.get("hx-on", {})
+        return self.attributes.setdefault("hx-on", {})
     @hx_on.setter
     def hx_on(self, value:dict[str, str]):
         self.attributes["hx-on"] = value
@@ -333,7 +333,7 @@ class html_tag(dom_tag, dom1core):
     @property
     def hx_vals(self) -> dict[str, str]:
         """Add values to submit with the request (JSON format). [hx-vals](https://htmx.org/attributes/hx-vals/)"""
-        return self.attributes.get("hx-vals", {})
+        return self.attributes.setdefault("hx-vals", {})
     @hx_vals.setter
     def hx_vals(self, value:dict[str, str]):
         self.attributes["hx-vals"] = value
@@ -383,7 +383,7 @@ class html_tag(dom_tag, dom1core):
     @property
     def hx_disinherit(self) -> dict[str, str]:
         """Control and disable automatic attribute inheritance for child nodes. [hx-disinherit](https://htmx.org/attributes/hx-disinherit/)"""
-        return self.attributes.get("hx-disinherit", {})
+        return self.attributes.setdefault("hx-disinherit", {})
     @hx_disinherit.setter
     def hx_disinherit(self, value:dict[str, str]):
         self.attributes["hx-disinherit"] = value
