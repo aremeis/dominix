@@ -73,7 +73,7 @@ class html_tag(dom_tag, dom1core):
                   hx_swap_oob:str|bool=None,
                   hx_target:str=None,
                   hx_trigger:str=None,
-                  hx_vals:dict[str, str]=None,
+                  hx_vals:str|dict[str, str]=None,
                   hx_boost:bool=None,
                   hx_confirm:str=None,
                   hx_delete:str=None,
@@ -82,7 +82,7 @@ class html_tag(dom_tag, dom1core):
                   hx_disinherit:str=None,
                   hx_encoding:str=None,
                   hx_ext:str=None,
-                  hx_headers:dict[str, str]=None,
+                  hx_headers:str|dict[str, str]=None,
                   hx_history:bool=None,
                   hx_history_elt:str=None,
                   hx_include:str=None,
@@ -220,6 +220,15 @@ class html_tag(dom_tag, dom1core):
         else:
             d[k_or_tuple_or_dict] = value
         return d
+    
+    def __json_value(self, attr):
+        # Support method for JSON properties.
+        value = self.attributes.setdefault(attr, {})
+        if isinstance(value, str):
+            value = json.loads(value)
+            self.attributes[attr] = value
+        return value
+
 
     # HTML attributes
 
@@ -386,9 +395,9 @@ class html_tag(dom_tag, dom1core):
     @property
     def hx_vals(self) -> dict[str, str]:
         """Add values to submit with the request (JSON format). [hx-vals](https://htmx.org/attributes/hx-vals/)"""
-        return self.attributes.setdefault("hx-vals", {})
+        return self.__json_value("hx-vals")
     @hx_vals.setter
-    def hx_vals(self, value:dict[str, str]):
+    def hx_vals(self, value:str|dict[str, str]):
         self.attributes["hx-vals"] = value
 
     # HTMX Additional Attributes
@@ -460,7 +469,7 @@ class html_tag(dom_tag, dom1core):
     @property
     def hx_headers(self) -> dict[str, str]:
         """Adds to the headers that will be submitted with the request. [hx-headers](https://htmx.org/attributes/hx-headers/)"""
-        return self.attributes.get("hx-headers", {})
+        return self.__json_value("hx-headers")
     @hx_headers.setter
     def hx_headers(self, value:dict[str, str]):
         self.attributes["hx-headers"] = value
