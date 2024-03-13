@@ -12,7 +12,7 @@ all you have to do is to install Dominix and replace `dominate` with `dominix` i
 
 ---
 
-** The rest of this page is a copy of the [original Dominate documentation](//github.com/Knio/dominate) where only the name has been changed. **
+**The rest of this page is a copy of the [original Dominate documentation](//github.com/Knio/dominate) where only the name has been changed.**
 
 Features specific to Dominix can be found[here](//github.com/aremeis/dominate/features.md).
 
