@@ -2,10 +2,10 @@ Dominix
 =======
 
 `Dominix` is a fork of [Dominate](//github.com/Knio/dominate) that adds support for [HTMX](https://htmx.org/). 
-All HTMX attributes are available as named arguments and docstrings that provides code completion and better IDE support. 
+All HTMX attributes are available as named arguments with docstrings, providing code completion and better IDE support. 
 Dominix also adds convenience methods for manipulating the `class` and `style` attributes using Python lists and dictionaries.
 
-[List of all extra features](//github.com/aremeis/dominate/features.md)
+[List of all extra features](//github.com/aremeis/dominix/blob/master/features.md)
 
 Dominix is designed to be backwards compatible with Dominate. If you are already using Dominate in your project 
 all you have to do is to install Dominix and replace `dominate` with `dominix` in your `import` statements.
@@ -14,7 +14,7 @@ all you have to do is to install Dominix and replace `dominate` with `dominix` i
 
 **The rest of this page is a copy of the [original Dominate documentation](//github.com/Knio/dominate) where only the name has been changed.**
 
-Features specific to Dominix can be found[here](//github.com/aremeis/dominate/features.md).
+Features specific to Dominix can be found [here](//github.com/aremeis/dominix/blob/master/features.md).
 
 ---
 
@@ -84,10 +84,6 @@ The recommended way to install `dominix` is with
 [`pip`](http://pypi.python.org/pypi/pip/):
 
     pip install dominix
-
-[![PyPI version](https://img.shields.io/pypi/v/dominix.svg?style=flat)](https://pypi.org/project/dominix/)
-[![PyPI downloads](https://img.shields.io/pypi/dm/dominix.svg?style=flat)](https://pypi.org/project/dominix/)
-
 
 
 Developed By
