@@ -64,6 +64,11 @@ def test_hx_on():
     assert tag.render() == '<html hx-on:htmx:before-request="foo()"></html>'
     tag.hx_on.clear()
     assert tag.render() == '<html></html>'
+    with tag:
+        upd_hx_on("click", "foo()")
+        assert tag.render() == '<html hx-on:click="foo()"></html>'
+        del_hx_on("click")
+        assert tag.render() == '<html></html>'
 
 def test_hx_vals():
     tag = html(hx_vals='{ "foo": "bar", "baz": "qux" }')

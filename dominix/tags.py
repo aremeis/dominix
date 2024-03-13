@@ -352,6 +352,21 @@ class html_tag(dom_tag, dom1core):
     @hx_on.setter
     def hx_on(self, value:dict[str, str]):
         self.attributes["hx-on"] = value
+
+    def upd_hx_on(self, key_or_tuple_or_dict_or_str, value=None):
+        """
+        Adds one or more events to the hx-on attribute (modifying existing dictionary).
+        If given only one argument, it can be a dictionary or a tuple. If it is a string,
+        If given two arguments, the first argument is the key and the second is the value.
+        """
+        html_tag.__update_dict(self.hx_on, key_or_tuple_or_dict_or_str, value)
+        return self
+
+    def del_hx_on(self, *keys:str):
+        """Removes one or more styles from the style attribute (modifying existing dictionary)."""
+        for key in keys:
+            self.hx_on.pop(key, None)
+        return self
         
     @property
     def hx_push_url(self) -> str|bool:
@@ -656,6 +671,21 @@ def del_style(*keys:str):
     Removes one or more styles from the style attribute of the current tag.
     """
     return get_current().del_style(*keys)
+
+
+def upd_hx_on(key_or_tuple_or_dict_or_str, value=None):
+    """
+    Adds one or more styles to the hx-on attribute (modifying existing dictionary).
+    If given only one argument, it can be a dictionary or a tuple. If it is a string,
+    If given two arguments, the first argument is the key and the second is the value.
+    """
+    return get_current().upd_hx_on(key_or_tuple_or_dict_or_str, value)
+
+def del_hx_on(*keys:str):
+    """
+    Removes one or more styles from the hx-on attribute of the current tag.
+    """
+    return get_current().del_hx_on(*keys)
 
 
 def upd_hx_vals(key_or_tuple_or_dict_or_str, value=None):
