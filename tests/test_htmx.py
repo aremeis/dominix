@@ -29,6 +29,10 @@ def test_style():
     assert tag.render() == '<html style="baz:qux"></html>'
     tag.style.update({"foo": "bar", "baz": "zab"})
     assert tag.render() == '<html style="baz:zab; foo:bar"></html>'
+    tag.upd_style("foo", "qux").upd_style({"baz": "bar", "qux": "foo"})
+    assert tag.render() == '<html style="baz:bar; foo:qux; qux:foo"></html>'
+    tag.del_style("foo", "wtf").del_style("qux")
+    assert tag.render() == '<html style="baz:bar"></html>'
 
 def test_hx_on():
     tag = html(hx_on_click="foo()")

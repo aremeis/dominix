@@ -208,6 +208,19 @@ class html_tag(dom_tag, dom1core):
         return all
 
 
+    def __update_dict(self, d:dict, k_or_tuple_or_dict, value=None):
+        # Support method for dictionary properties.
+        if value is None:
+            if isinstance(k_or_tuple_or_dict, dict):
+                d.update(k_or_tuple_or_dict)
+            elif isinstance(k_or_tuple_or_dict, tuple):
+                d[k_or_tuple_or_dict[0]] = k_or_tuple_or_dict[1]
+            else:
+                raise ValueError("Invalid argument type. Must be a tuple or a dictionary when value is None, got " + str(k_or_tuple_or_dict))
+        else:
+            d[k_or_tuple_or_dict] = value
+        return d
+
     # HTML attributes
 
     @property
@@ -259,10 +272,7 @@ class html_tag(dom_tag, dom1core):
         """
         style = self.attributes.get("style", None)
         if isinstance(style, str):
-            ret = {}
-            for pair in style.split(";"):
-                k, v = pair.split(":")
-                ret[k.strip()] = v.strip()
+            ret = self.__split_style(style)
             self.attributes["style"] = ret
             return ret
         else:
@@ -271,6 +281,25 @@ class html_tag(dom_tag, dom1core):
     def hx_get(self, value:str|dict[str, str]):
         self.attributes["style"] = value
 
+    def upd_style(self, key_or_tuple_or_dict_or_str, value=None):
+        """
+        Adds one or more styles to the style attribute (modifying existing dictionary).
+        If given only one argument, it can be a dictionary, a tuple or a string. If it is a string,
+        it will be split into a dictionary. If given two arguments, the first argument is the key
+        and the second is the value.
+        """
+        if isinstance(key_or_tuple_or_dict_or_str, str) and value is None:
+            style = self.__split_style(key_or_tuple_or_dict_or_str)
+            self.style.update(style)
+        else:
+            self.__update_dict(self.style, key_or_tuple_or_dict_or_str, value)
+        return self
+
+    def del_style(self, *keys:str):
+        """Removes one or more styles from the style attribute (modifying existing dictionary)."""
+        for key in keys:
+            self.style.pop(key, None)
+        return self
 
     # HTMX Core Attributes
 
