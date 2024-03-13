@@ -4,7 +4,7 @@ Dominix features
 These are features not present in Dominate. See the [main article](//github.com/aremeis/dominix) for 
 common features.
 
-All code samples assumes Dominix being imported like this:
+All code samples assume Dominix being imported like this:
 ```python
 from dominix.tags import *
 ```
@@ -38,7 +38,7 @@ Output:
 
 The following attributes have special implementation to provide better developer experience.
 
-#### `hx-on`
+#### Attribute `hx-on`
 
 HTMX [requires](https://htmx.org/attributes/hx-on/) one `hx-on*` attriubute for each event handler:
 ```html
@@ -61,7 +61,7 @@ In both cases the resulting HTMX will be:
 <div hx-on:click="alert()"></div>
 ```
 
-### `hx-val` and `hx-headers`
+### Attributes `hx-val` and `hx-headers`
 
 These HTMX attributes are also available as dictionary properties / constructor arguments.
 They will be converted to JSON when the tag is rendered:
@@ -75,7 +75,7 @@ tag.hx_vals = {"foo": "bar", "baz": "qux"}
 <div hx-headers='{"foo": "bar", "baz": "qux"}' hx-vals='{"foo": "bar", "baz": "qux"}'></div>
 ```
 
-### `cls`
+### Attribute `cls`
 
 The `cls` property can be used for easy manipulation of the HTML `class` attribute using standard Python list operations:
 
@@ -93,7 +93,7 @@ tag.cls.remove("b")
 (You can assign lists and strings to `cls` interchangably. Strings will be converted to lists as needed.)
 
 
-### `style`
+### Attribute `style`
 
 The `style` property can be used for easy manipulation of the HTML `style` attribute using standard Python dictionary operations:
 
