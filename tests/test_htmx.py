@@ -19,6 +19,12 @@ def test_cls():
     tag.add_class("foo", "bar")
     tag.rem_class("bar")
     assert tag.render() == '<html class="kaz foo"></html>'
+    with tag:
+        add_class("bar")
+        assert tag.render() == '<html class="kaz foo bar"></html>'
+        rem_class("foo")
+        assert tag.render() == '<html class="kaz bar"></html>'
+
 
 
 def test_style():
@@ -33,6 +39,11 @@ def test_style():
     assert tag.render() == '<html style="baz:bar; foo:qux; qux:foo"></html>'
     tag.del_style("foo", "wtf").del_style("qux")
     assert tag.render() == '<html style="baz:bar"></html>'
+    with tag:
+        upd_style("foo", "bar")
+        assert tag.render() == '<html style="baz:bar; foo:bar"></html>'
+        del_style("foo")
+        assert tag.render() == '<html style="baz:bar"></html>'
 
 def test_hx_on():
     tag = html(hx_on_click="foo()")
@@ -54,7 +65,7 @@ def test_hx_on():
     tag.hx_on.clear()
     assert tag.render() == '<html></html>'
 
-def test_hx_val():
+def test_hx_vals():
     tag = html(hx_vals='{ "foo": "bar", "baz": "qux" }')
     del tag.hx_vals["foo"]
     assert tag.render() == '''<html hx-vals='{"baz": "qux"}'></html>'''
@@ -68,6 +79,15 @@ def test_hx_val():
     assert tag.render() == '''<html hx-vals='{"baz": "qux"}'></html>'''
     tag.hx_vals.clear()
     assert tag.render() == '<html></html>'
+    tag.upd_hx_vals("foo", "bar").upd_hx_vals({"baz": "qux", "qux": "foo"})
+    assert tag.render() == '<html hx-vals=\'{"foo": "bar", "baz": "qux", "qux": "foo"}\'></html>'
+    tag.del_hx_vals("foo", "wtf").del_hx_vals("qux")
+    assert tag.render() == '<html hx-vals=\'{"baz": "qux"}\'></html>'
+    with tag:
+        upd_hx_vals("foo", "bar")
+        assert tag.render() == '<html hx-vals=\'{"baz": "qux", "foo": "bar"}\'></html>'
+        del_hx_vals("foo")
+        assert tag.render() == '<html hx-vals=\'{"baz": "qux"}\'></html>'
 
 def test_hx_headers():
     tag = html(hx_headers='''{"foo": "bar", "baz": "qux"}''')
@@ -81,6 +101,15 @@ def test_hx_headers():
     assert tag.render() == '''<html hx-headers='{"baz": "qux"}'></html>'''
     tag.hx_headers.clear()
     assert tag.render() == '<html></html>'
+    tag.upd_hx_headers("foo", "bar").upd_hx_headers({"baz": "qux", "qux": "foo"})
+    assert tag.render() == '<html hx-headers=\'{"foo": "bar", "baz": "qux", "qux": "foo"}\'></html>'
+    tag.del_hx_headers("foo", "wtf").del_hx_headers("qux")
+    assert tag.render() == '<html hx-headers=\'{"baz": "qux"}\'></html>'
+    with tag:
+        upd_hx_headers("foo", "bar")
+        assert tag.render() == '<html hx-headers=\'{"baz": "qux", "foo": "bar"}\'></html>'
+        del_hx_headers("foo")
+        assert tag.render() == '<html hx-headers=\'{"baz": "qux"}\'></html>'
 
 def test_hx_get():
     tag = html()

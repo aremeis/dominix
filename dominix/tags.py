@@ -208,7 +208,8 @@ class html_tag(dom_tag, dom1core):
         return all
 
 
-    def __update_dict(self, d:dict, k_or_tuple_or_dict, value=None):
+    @staticmethod
+    def __update_dict(d:dict, k_or_tuple_or_dict, value=None):
         # Support method for dictionary properties.
         if value is None:
             if isinstance(k_or_tuple_or_dict, dict):
@@ -221,13 +222,29 @@ class html_tag(dom_tag, dom1core):
             d[k_or_tuple_or_dict] = value
         return d
     
-    def __json_value(self, attr):
+    def __del_dict(self, d:dict, *keys:str):
+        # Support method for dictionary properties.
+        for key in keys:
+            d.pop(key, None)
+        return self
+    
+    def __json_value(self, attr) -> dict[str, str]:
         # Support method for JSON properties.
         value = self.attributes.setdefault(attr, {})
         if isinstance(value, str):
             value = json.loads(value)
             self.attributes[attr] = value
         return value
+    
+    def __json_upd(self, attr, key_or_tuple_or_dict_or_str, value=None):
+        # Support method for JSON properties.
+        dict_ = self.__json_value(attr)
+        if isinstance(key_or_tuple_or_dict_or_str, str) and value is None:
+            value = json.loads(key_or_tuple_or_dict_or_str)
+            dict_.update(dict_)
+        else:
+            html_tag.__update_dict(dict_, key_or_tuple_or_dict_or_str, value)
+        return self
 
 
     # HTML attributes
@@ -301,7 +318,7 @@ class html_tag(dom_tag, dom1core):
             style = self.__split_style(key_or_tuple_or_dict_or_str)
             self.style.update(style)
         else:
-            self.__update_dict(self.style, key_or_tuple_or_dict_or_str, value)
+            html_tag.__update_dict(self.style, key_or_tuple_or_dict_or_str, value)
         return self
 
     def del_style(self, *keys:str):
@@ -400,6 +417,22 @@ class html_tag(dom_tag, dom1core):
     def hx_vals(self, value:str|dict[str, str]):
         self.attributes["hx-vals"] = value
 
+    def upd_hx_vals(self, key_or_tuple_or_dict_or_str, value=None):
+        """
+        Adds one or more styles to the hx-vals attribute (modifying existing dictionary).
+        If given only one argument, it can be a dictionary, a tuple or a string. If it is a string,
+        it will be converted from JSON to a dictionary. If given two arguments, the first argument is the key
+        and the second is the value.
+        """
+        return self.__json_upd("hx-vals", key_or_tuple_or_dict_or_str, value)
+
+    def del_hx_vals(self, *keys:str):
+        """Removes one or more styles from the hx-vals attribute (modifying existing dictionary)."""
+        for key in keys:
+            self.hx_vals.pop(key, None)
+        return self
+
+
     # HTMX Additional Attributes
         
     @property
@@ -473,6 +506,21 @@ class html_tag(dom_tag, dom1core):
     @hx_headers.setter
     def hx_headers(self, value:dict[str, str]):
         self.attributes["hx-headers"] = value
+
+    def upd_hx_headers(self, key_or_tuple_or_dict_or_str, value=None):
+        """
+        Adds one or more styles to the hx-headers attribute (modifying existing dictionary).
+        If given only one argument, it can be a dictionary, a tuple or a string. If it is a string,
+        it will be converted from JSON to a dictionary. If given two arguments, the first argument is the key
+        and the second is the value.
+        """
+        return self.__json_upd("hx-headers", key_or_tuple_or_dict_or_str, value)
+    
+    def del_hx_headers(self, *keys:str):
+        """Removes one or more styles from the hx-headers attribute (modifying existing dictionary)."""
+        for key in keys:
+            self.hx_headers.pop(key, None)
+        return self
 
     @property
     def hx_history(self) -> bool:
@@ -577,6 +625,69 @@ class html_tag(dom_tag, dom1core):
     @hx_validate.setter
     def hx_validate(self, value:bool):
         self.attributes["hx-validate"] = value
+
+
+# Global functions for use inside `with` statements
+
+def add_class(*values:str):
+    """
+    Adds one or more classes to the class attribute of the current tag.
+    """
+    return get_current().add_class(*values)
+
+def rem_class(*values:str):
+    """
+    Removes one or more classes from the class attribute of the current tag.
+    """
+    return get_current().rem_class(*values)
+
+
+def upd_style(key_or_tuple_or_dict_or_str, value=None):
+    """
+    Adds one or more styles to the style attribute of the current tag.
+    If given only one argument, it can be a dictionary, a tuple or a string. If it is a string,
+    it will be split into a dictionary. If given two arguments, the first argument is the key
+    and the second is the value.
+    """
+    return get_current().upd_style(key_or_tuple_or_dict_or_str, value)
+
+def del_style(*keys:str):
+    """
+    Removes one or more styles from the style attribute of the current tag.
+    """
+    return get_current().del_style(*keys)
+
+
+def upd_hx_vals(key_or_tuple_or_dict_or_str, value=None):
+    """
+    Adds one or more styles to the hx-vals attribute of the current tag.
+    If given only one argument, it can be a dictionary, a tuple or a string. If it is a string,
+    it will be converted from JSON to a dictionary. If given two arguments, the first argument is the key
+    and the second is the value.
+    """
+    return get_current().upd_hx_vals(key_or_tuple_or_dict_or_str, value)
+
+def del_hx_vals(*keys:str):
+    """
+    Removes one or more styles from the hx-vals attribute of the current tag.
+    """
+    return get_current().del_hx_vals(*keys)
+
+
+def upd_hx_headers(key_or_tuple_or_dict_or_str, value=None):
+    """
+    Adds one or more styles to the hx-headers attribute of the current tag.
+    If given only one argument, it can be a dictionary, a tuple or a string. If it is a string,
+    it will be converted from JSON to a dictionary. If given two arguments, the first argument is the key
+    and the second is the value.
+    """
+    return get_current().upd_hx_headers(key_or_tuple_or_dict_or_str, value)
+
+def del_hx_headers(*keys:str):
+    """
+    Removes one or more styles from the hx-headers attribute of the current tag.
+    """
+    return get_current().del_hx_headers(*keys)
     
 
 ################################################################################
