@@ -55,6 +55,9 @@ def test_hx_on():
     assert tag.render() == '<html></html>'
 
 def test_hx_val():
+    tag = html(hx_vals='{ "foo": "bar", "baz": "qux" }')
+    del tag.hx_vals["foo"]
+    assert tag.render() == '''<html hx-vals='{"baz": "qux"}'></html>'''
     tag = html()
     tag.hx_vals.update({"foo": "bar", "baz": "qux"})
     assert tag.hx_vals == {"foo": "bar", "baz": "qux"}
@@ -67,6 +70,8 @@ def test_hx_val():
     assert tag.render() == '<html></html>'
 
 def test_hx_headers():
+    tag = html(hx_headers='''{"foo": "bar", "baz": "qux"}''')
+    assert tag.hx_headers == {"foo": "bar", "baz": "qux"}
     tag = html(hx_headers={"foo": "bar", "baz": "qux"})
     assert tag.hx_headers == {"foo": "bar", "baz": "qux"}
     assert tag.hx_headers["foo"] == "bar"
