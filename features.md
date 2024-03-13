@@ -15,7 +15,7 @@ HTMX support
 The most important difference from Dominate is of course the support for HTMX. All HTMX attributes are 
 available as named arguments and properties, including docstrings. This provides code completion and better IDE support.
 
-![Screen shot](//github.org/aremeis/dominix/img/screenshot-1.png)
+![Screen shot](https://raw.githubusercontent.com/aremeis/dominix/master/img/screenshot-1.png)
 
 The attributes are available both as constructor arguments and as tag properties:
 ```python

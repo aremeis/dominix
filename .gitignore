@@ -42,3 +42,4 @@ nosetests.xml
 .venv/
 .envrc
 .DS_Store
+temp.py
