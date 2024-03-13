@@ -111,31 +111,61 @@ tag.style["font-color"] = "green"
 (You can assign dictionaries and strings to `style` interchangably. Strings will be converted to dictionaries as needed.)
 
 
-### Chainable `attr`
+### Method chaining
+
+All the special attributes mentioned above have convenience methods for addiing and deleting elements 
+with support for _method chaining_:
+* `add_class` / `rem_class`
+* `upd_style` / `del_style`
+* `upd_hx_on` / `del_hx_on`
+* `upd_hx_vals` / `del_hx_vals`
+* `upd_hx_headers` / `del_hx_headers`
+
+Example:
+```python
+# Let's say you have created this component in your design system
+def component():
+    return div("Hello", cls="one two three", hx_on={"click": "alert('click')"})
+
+# ... and you want to make your own variation of it:
+def my_component():
+    return component().add_class("four").rem_class("one").upd_hx_on("mouseover", "alert('mouseover')").del_hx_on("click")
+
+# Or using with:
+def my_component():
+    with component() as c:
+        add_class("four")
+        rem_class("one")
+        upd_hx_on("mouseover", "alert('mouseover')")
+        del_hx_on("click")
+    return c
+```
+
+The result of `my_component().render()`is the same in both cases:
+```html
+<div class="two three four" hx-on:mouseover="alert('mouseover')">Hello</div>
+```
 
 Dominate comes with the `attr` function for adding attributes to the current tag (when using `with` syntax). 
 Dominix has the same function, with the only change that it will return `self`. In addition, `attr` has also been added as a method.
-These two features make your code more efficient in some situations:
+This allows for using method chaining, which may be more convenient in some situation:
 
 ```python
-# Let's say you have created this component in your design system
 def section(title):
-    # A very simple example
     return div(h1(title))
 
-# ... and you want to make your own variation of it:
-def mysection():
+def my_section():
     return section("Chained").attr(hx_get="/my/endpoint")
 
-# ... which is equivalent to:
-def mysection():
+# Alternative without method chaining
+def my_section():
     tag = section("Chained")
     with tag:
         attr(hx_get="/my/endpoint")
     return tag
 ```
 
-The result of `mysection().render()`: is the same in both cases:
+The result of `my_section().render()`: is the same in both cases:
 ```html
 <div hx-get="/my/endpoint">
     <h1>Chained</h1>
