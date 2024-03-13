@@ -12,6 +12,14 @@ def test_cls():
     assert tag.render() == '<html class="baz qux"></html>'
     tag.cls = "kaz quux "
     assert tag.render() == '<html class="kaz quux "></html>'
+    tag.add_class("foo", "bar")
+    assert tag.render() == '<html class="kaz quux foo bar"></html>'
+    tag.rem_class("quux", "foo", "fux")
+    assert tag.render() == '<html class="kaz bar"></html>'
+    tag.add_class("foo", "bar")
+    tag.rem_class("bar")
+    assert tag.render() == '<html class="kaz foo"></html>'
+
 
 def test_style():
     tag = html(style="foo: bar;  baz: qux")
