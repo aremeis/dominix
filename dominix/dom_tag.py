@@ -388,8 +388,19 @@ class dom_tag(object):
       elif value is True:
         value = attribute
 
-      val = unicode(value) if isinstance(value, util.text) and not value.escape else util.escape(unicode(value), True)
-      sb.append(' %s="%s"' % (attribute, val))
+      if isinstance(value, util.text) and not value.escape:
+        val = unicode(value)
+        sb.append(' %s="%s"' % (attribute, val))
+      else:
+        value = str(value)
+        if value.find('"') >= 0 and value.find("'") == -1:
+          # Use single quotes only if the value contains double quotes but no single quotes
+          val = util.escape(unicode(value), False)
+          sb.append(" %s='%s'" % (attribute, val))
+        else:
+          # Otherwise use double quotes
+          val = util.escape(unicode(value), True)
+          sb.append(' %s="%s"' % (attribute, val))
 
     sb.append(' />' if self.is_single and xhtml else '>')
 

@@ -27,6 +27,8 @@ def test_hx_on():
     assert tag.render() == '<html hx-on-click="foo()"></html>'
     tag = html(hx_on={"click": "foo()"})
     assert tag.hx_on["click"] == "foo()"
+    tag = html()
+    tag.hx_on["click"] = "foo()"
     assert tag.render() == '<html hx-on:click="foo()"></html>'
     tag.hx_on["click"] = "bar()"
     assert tag.render() == '<html hx-on:click="bar()"></html>'
@@ -41,13 +43,14 @@ def test_hx_on():
     assert tag.render() == '<html></html>'
 
 def test_hx_val():
-    tag = html(hx_vals={"foo": "bar", "baz": "qux"})
+    tag = html()
+    tag.hx_vals.update({"foo": "bar", "baz": "qux"})
     assert tag.hx_vals == {"foo": "bar", "baz": "qux"}
     assert tag.hx_vals["foo"] == "bar"
     assert tag.hx_vals.get("bazz", None) == None
-    assert tag.render() == '<html hx-vals="{&quot;foo&quot;: &quot;bar&quot;, &quot;baz&quot;: &quot;qux&quot;}"></html>'
+    assert tag.render() == '''<html hx-vals='{"foo": "bar", "baz": "qux"}'></html>'''
     del tag.hx_vals["foo"]
-    assert tag.render() == '<html hx-vals="{&quot;baz&quot;: &quot;qux&quot;}"></html>'
+    assert tag.render() == '''<html hx-vals='{"baz": "qux"}'></html>'''
     tag.hx_vals.clear()
     assert tag.render() == '<html></html>'
 
@@ -56,9 +59,9 @@ def test_hx_headers():
     assert tag.hx_headers == {"foo": "bar", "baz": "qux"}
     assert tag.hx_headers["foo"] == "bar"
     assert tag.hx_headers.get("bazz", None) == None
-    assert tag.render() == '<html hx-headers="{&quot;foo&quot;: &quot;bar&quot;, &quot;baz&quot;: &quot;qux&quot;}"></html>'
+    assert tag.render() == '''<html hx-headers='{"foo": "bar", "baz": "qux"}'></html>'''
     del tag.hx_headers["foo"]
-    assert tag.render() == '<html hx-headers="{&quot;baz&quot;: &quot;qux&quot;}"></html>'
+    assert tag.render() == '''<html hx-headers='{"baz": "qux"}'></html>'''
     tag.hx_headers.clear()
     assert tag.render() == '<html></html>'
 
@@ -102,7 +105,7 @@ def test_all_args():
         hx_sync="ag",
         hx_validate="ah",
     )
-    assert tag.render() == '<html hx-boost="true" hx-confirm="m" hx-delete="n" hx-disable="o" hx-disable-elt="p" hx-disinherit="q" hx-encoding="r" hx-ext="s" hx-get="a" hx-headers="{&quot;t&quot;: &quot;u&quot;}" hx-history="false" hx-history-elt="v" hx-include="w" hx-indicator="x" hx-params="z" hx-patch="aa" hx-post="b" hx-preserve="ab" hx-prompt="ac" hx-push-url="d" hx-put="ad" hx-replace-url="ae" hx-request="af" hx-select="e" hx-select-oob="f" hx-swap="g" hx-swap-oob="h" hx-sync="ag" hx-target="i" hx-trigger="j" hx-validate="ah" hx-vals="{&quot;k&quot;: &quot;l&quot;}"></html>'
+    assert tag.render() == '''<html hx-boost="true" hx-confirm="m" hx-delete="n" hx-disable="o" hx-disable-elt="p" hx-disinherit="q" hx-encoding="r" hx-ext="s" hx-get="a" hx-headers='{"t": "u"}' hx-history="false" hx-history-elt="v" hx-include="w" hx-indicator="x" hx-params="z" hx-patch="aa" hx-post="b" hx-preserve="ab" hx-prompt="ac" hx-push-url="d" hx-put="ad" hx-replace-url="ae" hx-request="af" hx-select="e" hx-select-oob="f" hx-swap="g" hx-swap-oob="h" hx-sync="ag" hx-target="i" hx-trigger="j" hx-validate="ah" hx-vals='{"k": "l"}'></html>'''
 
 def test_all_props():
     tag = html()
@@ -138,7 +141,7 @@ def test_all_props():
     tag.hx_request="af"
     tag.hx_sync="ag"
     tag.hx_validate="ah"
-    assert tag.render() == '<html hx-boost="true" hx-confirm="m" hx-delete="n" hx-disable="o" hx-disable-elt="p" hx-disinherit="q" hx-encoding="r" hx-ext="s" hx-get="a" hx-headers="{&quot;t&quot;: &quot;u&quot;}" hx-history="false" hx-history-elt="v" hx-include="w" hx-indicator="x" hx-params="z" hx-patch="aa" hx-post="b" hx-preserve="ab" hx-prompt="ac" hx-push-url="d" hx-put="ad" hx-replace-url="ae" hx-request="af" hx-select="e" hx-select-oob="f" hx-swap="g" hx-swap-oob="h" hx-sync="ag" hx-target="i" hx-trigger="j" hx-validate="ah" hx-vals="{&quot;k&quot;: &quot;l&quot;}"></html>'
+    assert tag.render() == '''<html hx-boost="true" hx-confirm="m" hx-delete="n" hx-disable="o" hx-disable-elt="p" hx-disinherit="q" hx-encoding="r" hx-ext="s" hx-get="a" hx-headers='{"t": "u"}' hx-history="false" hx-history-elt="v" hx-include="w" hx-indicator="x" hx-params="z" hx-patch="aa" hx-post="b" hx-preserve="ab" hx-prompt="ac" hx-push-url="d" hx-put="ad" hx-replace-url="ae" hx-request="af" hx-select="e" hx-select-oob="f" hx-swap="g" hx-swap-oob="h" hx-sync="ag" hx-target="i" hx-trigger="j" hx-validate="ah" hx-vals='{"k": "l"}'></html>'''
 
 
 def test_attr():
@@ -151,3 +154,7 @@ def test_attr():
     assert tag.render() == '<html class="bar" href="bax"></html>'
     tag.attr(cls="baz", href="qux", id="quux")
     assert tag.render() == '<html class="baz" href="qux" id="quux"></html>'
+
+def test_quotes():
+    tag = div(dbl='b"c', sng="a'b", both="""a"'b""")
+    assert tag.render() == '''<div both="a&quot;'b" dbl='b"c' sng="a'b"></div>'''
