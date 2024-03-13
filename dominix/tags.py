@@ -256,7 +256,7 @@ class html_tag(dom_tag, dom1core):
         class list using Python list operations. The list will be converted to a correct
         string representation when the tag is rendered.
         """
-        classes = self.attributes.get("class", [])
+        classes = self.attributes.setdefault("class", [])
         if isinstance(classes, str):
             classes = classes.split()
             self.attributes["class"] = classes
