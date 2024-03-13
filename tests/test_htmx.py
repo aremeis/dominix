@@ -1,6 +1,9 @@
 from dominix.tags import *
 
 def test_cls():
+    tag = html()
+    tag.add_class("foo")
+    assert tag.render() == '<html class="foo"></html>'
     tag = html(cls="foo  bar")
     assert tag.render() == '<html class="foo  bar"></html>'
     classes = tag.cls
