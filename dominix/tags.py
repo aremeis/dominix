@@ -226,6 +226,30 @@ class html_tag(dom_tag, dom1core):
     def cls(self, value:str|list[str]):
         self.attributes["class"] = value
 
+    def add_class(self, *values:str):
+        """Adds one or more classes to the class attribute (modifying existing list)."""
+        self.cls.extend(values)
+        return self
+    
+    def rem_class(self, *values:str):
+        """Removes one or more classes from the class attribute (modifying existing list)."""
+        for value in values:
+            # In case of multiple occurrences of the same class
+            try:
+                while True:
+                    self.cls.remove(value)
+            except ValueError:
+                pass
+        return self
+
+    @staticmethod    
+    def __split_style(style:str):
+        ret = {}
+        for pair in style.split(";"):
+            k, v = pair.split(":")
+            ret[k.strip()] = v.strip()
+        return ret
+
     @property
     def style(self) -> dict:
         """
