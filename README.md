@@ -1,7 +1,34 @@
 Dominix
 =======
 
-`Dominix` is a fork of [Dominate](//github.com/Knio/dominate) that adds support for [HTMX](https://htmx.org/). 
+Are you tired of angle and curly brackets? Suppering from template fatigue? Why not write your next front end in _pure Python_!
+
+Template example from the Django [tutorial](https://docs.djangoproject.com/en/5.0/intro/tutorial03/)
+```html
+{% if latest_question_list %}
+    <ul>
+    {% for question in latest_question_list %}
+        <li><a href="/polls/{{ question.id }}/">{{ question.question_text }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}
+```
+
+Equivalent Python code using Dominix:
+```python
+if latest_question_list:
+    with ul():
+        for question in latest_question_list:
+            li(a(question.question_text, href=f"/polls/{question.id}/"))
+else:
+    p("No polls are available.")
+```
+
+---
+
+_Dominix_ is a fork of [Dominate](//github.com/Knio/dominate) that adds support for [HTMX](https://htmx.org/). 
 All HTMX attributes are available as named arguments with docstrings, providing code completion and better IDE support. 
 Dominix also adds convenience methods for manipulating the `class` and `style` attributes using Python lists and dictionaries.
 
@@ -12,13 +39,13 @@ all you have to do is to install Dominix and replace `dominate` with `dominix` i
 
 ---
 
-**The rest of this page is a copy of the [original Dominate documentation](//github.com/Knio/dominate) where only the name has been changed.**
+**The rest of this document is a copy of the [original Dominate documentation](//github.com/Knio/dominate), only modified to reflect the name change.**
 
 Features specific to Dominix can be found [here](//github.com/aremeis/dominix/blob/master/features.md).
 
 ---
 
-`Dominix` is a Python library for creating and manipulating HTML documents using an elegant DOM API.
+_Dominix_ is a Python library for creating and manipulating HTML documents using an elegant DOM API.
 It allows you to write HTML pages in pure Python very concisely, which eliminates the need to learn another template language, and lets you take advantage of the more powerful features of Python.
 
 Python:
@@ -80,7 +107,7 @@ Output:
 Installation
 ------------
 
-The recommended way to install `dominix` is with
+The recommended way to install Dominix is with
 [`pip`](http://pypi.python.org/pypi/pip/):
 
     pip install dominix
@@ -129,7 +156,7 @@ print(html(body(h1('Hello, World!'))))
 Attributes
 ----------
 
-`Dominix` can also use keyword arguments to append attributes onto your tags. Most of the attributes are a direct copy from the HTML spec with a few variations.
+Dominix can also use keyword arguments to append attributes onto your tags. Most of the attributes are a direct copy from the HTML spec with a few variations.
 
 For attributes `class` and `for` which conflict with Python's [reserved keywords](http://docs.python.org/2/reference/lexical_analysis.html#keywords "Reserved Keywords"), you can use the following aliases:
 
@@ -443,7 +470,7 @@ print(para)
 Decorators
 ----------
 
-`Dominix` is great for creating reusable widgets for parts of your page. Consider this example:
+Dominix is great for creating reusable widgets for parts of your page. Consider this example:
 
 ```python
 def greeting(name):
@@ -505,7 +532,7 @@ print(greeting('Bob'))
 Creating Documents
 ------------------
 
-Since creating the common structure of an HTML document everytime would be excessively tedious dominix provides a class to create and manage them for you: `document`.
+Since creating the common structure of an HTML document everytime would be excessively tedious Dominix provides a class to create and manage them for you: `document`.
 
 When you create a new document, the basic HTML tag structure is created for you.
 
