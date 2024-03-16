@@ -1,7 +1,7 @@
 Dominix
 =======
 
-Are you tired of angle and curly brackets? Suppering from template fatigue? Why not write your next front end in _pure Python_!
+Are you tired of angle and curly brackets? Suffering from template fatigue? Why not write your next front end in _pure Python_!
 
 Template example from the Django [tutorial](https://docs.djangoproject.com/en/5.0/intro/tutorial03/)
 ```html
