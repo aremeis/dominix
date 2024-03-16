@@ -28,7 +28,7 @@ else:
 
 ---
 
-_Dominix_ is a fork of [Dominate](//github.com/Knio/dominate) that adds support for [HTMX](https://htmx.org/). 
+_Dominix_ is a fork of [Dominate](https:://github.com/Knio/dominate) that adds support for [HTMX](https://htmx.org/). 
 All HTMX attributes are available as named arguments with docstrings, providing code completion and better IDE support. 
 Dominix also adds convenience methods for manipulating the `class` and `style` attributes using Python lists and dictionaries.
 
