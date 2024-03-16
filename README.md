@@ -32,7 +32,7 @@ _Dominix_ is a fork of [Dominate](//github.com/Knio/dominate) that adds support 
 All HTMX attributes are available as named arguments with docstrings, providing code completion and better IDE support. 
 Dominix also adds convenience methods for manipulating the `class` and `style` attributes using Python lists and dictionaries.
 
-[List of all extra features](//github.com/aremeis/dominix/blob/master/features.md)
+[List of all new features](https://github.com/aremeis/dominix/blob/master/features.md)
 
 Dominix is designed to be backwards compatible with Dominate. If you are already using Dominate in your project 
 all you have to do is to install Dominix and replace `dominate` with `dominix` in your `import` statements.
@@ -41,7 +41,7 @@ all you have to do is to install Dominix and replace `dominate` with `dominix` i
 
 **The rest of this document is a copy of the [original Dominate documentation](//github.com/Knio/dominate), only modified to reflect the name change.**
 
-Features specific to Dominix can be found [here](//github.com/aremeis/dominix/blob/master/features.md).
+Features specific to Dominix can be found [here](https://github.com/aremeis/dominix/blob/master/features.md).
 
 ---
 
