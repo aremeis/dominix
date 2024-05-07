@@ -1189,6 +1189,7 @@ class sub(html_tag):
 
 
 class sup(html_tag):
+  is_inline = True
   '''
   The sup element represents a superscript.
   '''
