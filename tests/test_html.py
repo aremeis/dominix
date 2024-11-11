@@ -257,7 +257,7 @@ def test_keyword_attributes():
 
 
 def test_namespaced_attributes():
-  assert div(foo_bar='one').render() == '<div foo_bar="one"></div>'
+  assert div(foo_bar='one').render() == '<div foo-bar="one"></div>'
   assert div(xlink_href='one').render() == '<div xlink:href="one"></div>'
 
 

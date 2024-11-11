@@ -470,15 +470,13 @@ class dom_tag(object):
     # Workaround for Python's reserved words
     if attribute[0] == '_':
       attribute = attribute[1:]
-
-    # Workaround for dash
-    special_prefix = any([attribute.startswith(x) for x in ('data_', 'aria_', 'hx_')])
-    if attribute in set(['http_equiv']) or special_prefix:
-      attribute = attribute.replace('_', '-').lower()
-
-    # Workaround for colon
+    
     if attribute.split('_')[0] in ('xlink', 'xml', 'xmlns'):
+      # Workaround for colon
       attribute = attribute.replace('_', ':', 1).lower()
+    else:
+      # Workaround for dash
+      attribute = attribute.replace('_', '-')
 
     return attribute
 
