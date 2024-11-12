@@ -31,7 +31,7 @@ except NameError: # py3
 underscored_classes = set(['del', 'input', 'map', 'object'])
 
 
-_SPECIAL_ATTRS = set(["class", "style", "hx-on", "hx-vals", "hx-headers"])
+_SPECIAL_ATTRS = set(["class", "style", "hx-on", "hx-vals", "hx-headers", "x-bind", "x-on"])
 
 # This would make declaring properties a breeze, but unfortunately VS Code won't display the docstring... :(
 # def _attr_prop(attr, doc=None):
@@ -96,6 +96,24 @@ class html_tag(dom_tag, dom1core):
                   hx_request:str=None,
                   hx_sync:str=None,
                   hx_validate:bool=None,
+                  x_data:str|dict[str, str]=None,
+                  x_init:str=None,
+                  x_show:str=None,
+                  x_bind:dict[str, str]=None,
+                  x_on:dict[str, str]=None,
+                  x_text:str=None,
+                  x_html:str=None,
+                  x_model:str=None,
+                  x_modelable:str=None,
+                  x_for:str=None,
+                  x_transition:str=None,
+                  x_effect:str=None,
+                  x_ignore:str=None,
+                  x_ref:str=None,
+                  x_cloak:str=None,
+                  x_teleport:str=None,
+                  x_if:str=None,
+                  x_id:str=None,
                   **kwargs):
         '''
         Creates a new tag. Child tags should be passed as arguments and attributes
@@ -139,6 +157,24 @@ class html_tag(dom_tag, dom1core):
         * `hx_request (str)` - Configures various aspects of the request [hx-request](https://htmx.org/attributes/hx-request/)
         * `hx_sync (str)` - Control the sync behavior of the request [hx-sync](https://htmx.org/attributes/hx-sync/)
         * `hx_validate (bool)` - Force elements to validate themselves before a request [hx-validate](https://htmx.org/attributes/hx-validate/)
+        * `x_data (str|dict[str, str])` - Everything in Alpine starts with the x-data directive. [x-data](https://alpinejs.dev/directives/data)
+        * `x_init (str)` - The x-init directive allows you to hook into the initialization phase of any element in Alpine. [x-init](https://alpinejs.dev/directives/init)
+        * `x_show (str)` - x-show is one of the most useful and powerful directives in Alpine. It provides an expressive way to show and hide DOM elements. [x-show](https://alpinejs.dev/directives/show)
+        * `x_bind (dict[str, str])` - x-bind allows you to set HTML attributes on elements based on the result of JavaScript expressions. [x-bind](https://alpinejs.dev/directives/bind)
+        * `x_on (dict[str, str])` - x-on allows you to easily run code on dispatched DOM events. [x-on](https://alpinejs.dev/directives/on)
+        * `x_text (str)` - x-text sets the text content of an element to the result of a given expression. [x-text](https://alpinejs.dev/directives/text)
+        * `x_html (str)` - x-html sets the "innerHTML" property of an element to the result of a given expression. [x-html](https://alpinejs.dev/directives/html)
+        * `x_model (str)` - x-model allows you to bind the value of an input element to Alpine data. [x-model](https://alpinejs.dev/directives/model)
+        * `x_modelable (str)` - x-modelable allows you to expose any Alpine property as the target of the x-model directive. [x-modelable](https://alpinejs.dev/directives/modelable)
+        * `x_for (str)` - Alpine's x-for directive allows you to create DOM elements by iterating through a list. [x-for](https://alpinejs.dev/directives/for)
+        * `x_transition (str)` - With a few x-transition directives, you can create smooth transitions between when an element is shown or hidden. [x-transition](https://alpinejs.dev/directives/transition)
+        * `x_effect (str)` - x-effect is a useful directive for re-evaluating an expression when one of its dependencies change. [x-effect](https://alpinejs.dev/directives/effect)
+        * `x_ignore (str)` - If for some reason, you don't want Alpine to touch a specific section of your HTML, you can prevent it from doing so using x-ignore. [x-ignore](https://alpinejs.dev/directives/ignore)
+        * `x_ref (str)` - x-ref in combination with $refs is a useful utility for easily accessing DOM elements directly. [x-ref](https://alpinejs.dev/directives/ref)
+        * `x_cloak (str)` - [x-cloak](https://alpinejs.dev/directives/cloak)
+        * `x_teleport (str)` - The x-teleport directive allows you to transport part of your Alpine template to another part of the DOM on the page entirely. [x-teleport](https://alpinejs.dev/directives/teleport)
+        * `x_if (str)` - x-if allows you to conditionally render elements based on the result of a given expression. [x-if](https://alpinejs.dev/directives/if)
+        * `x_id (str)` - x-id allows you to declare a new "scope" for any new IDs generated using $id(). [x-id](https://alpinejs.dev/directives/id)
         * `**kwargs` - Additional attributes to set on the tag.        
         '''
         super(html_tag, self).__init__(
@@ -178,6 +214,24 @@ class html_tag(dom_tag, dom1core):
             hx_request = hx_request,
             hx_sync = hx_sync,
             hx_validate = hx_validate,
+            x_data = x_data,
+            x_init = x_init,
+            x_show = x_show,
+            x_bind = x_bind,
+            x_on = x_on,
+            x_text = x_text,
+            x_html = x_html,
+            x_model = x_model,
+            x_modelable = x_modelable,
+            x_for = x_for,
+            x_transition = x_transition,
+            x_effect = x_effect,
+            x_ignore = x_ignore,
+            x_ref = x_ref,
+            x_cloak = x_cloak,
+            x_teleport = x_teleport,
+            x_if = x_if,
+            x_id = x_id,
             **kwargs)
     
     
@@ -197,6 +251,10 @@ class html_tag(dom_tag, dom1core):
                 if map:
                     if attr == "hx-on":
                         all += [(f"hx-on:{k}", v) for k, v in self.attributes.get("hx-on", {}).items()]
+                    elif attr == "x-bind":
+                        all += [(f"x-bind:{k}", v) for k, v in self.attributes.get("x-bind", {}).items()]
+                    elif attr == "x-on":
+                        all += [(f"x-on:{k}", v) for k, v in self.attributes.get("x-on", {}).items()]
                     elif attr == "style":
                         if isinstance(map, dict):
                             all.append((attr, "; ".join([f"{k}:{v}" for k, v in map.items()])))
@@ -363,7 +421,7 @@ class html_tag(dom_tag, dom1core):
         return self
 
     def del_hx_on(self, *keys:str):
-        """Removes one or more styles from the style attribute (modifying existing dictionary)."""
+        """Removes one or more events from the style attribute (modifying existing dictionary)."""
         for key in keys:
             self.hx_on.pop(key, None)
         return self
@@ -434,7 +492,7 @@ class html_tag(dom_tag, dom1core):
 
     def upd_hx_vals(self, key_or_tuple_or_dict_or_str, value=None):
         """
-        Adds one or more styles to the hx-vals attribute (modifying existing dictionary).
+        Adds one or more values to the hx-vals attribute (modifying existing dictionary).
         If given only one argument, it can be a dictionary, a tuple or a string. If it is a string,
         it will be converted from JSON to a dictionary. If given two arguments, the first argument is the key
         and the second is the value.
@@ -642,6 +700,215 @@ class html_tag(dom_tag, dom1core):
         self.attributes["hx-validate"] = value
 
 
+    # Alpine.js Additional Attributes
+
+    @property
+    def x_data(self) -> str|dict[str, str]:
+        """
+        Everything in Alpine starts with the x-data directive.
+        x-data defines a chunk of HTML as an Alpine component and provides the reactive data for that component to reference.
+        [x-data](https://alpinejs.dev/directives/data)
+        """
+        return self.__json_value("x-data")
+    @x_data.setter
+    def x_data(self, value:str|dict[str, str]):
+        self.attributes["x-data"] = value
+
+    @property
+    def x_init(self) -> str:
+        """The x-init directive allows you to hook into the initialization phase of any element in Alpine. [x-init](https://alpinejs.dev/directives/init)"""
+        return self.attributes.get("x-init", None)
+    @x_init.setter
+    def x_init(self, value:str):
+        self.attributes["x-init"] = value
+
+    @property
+    def x_show(self) -> str:
+        """x-show is one of the most useful and powerful directives in Alpine. It provides an expressive way to show and hide DOM elements. [x-show](https://alpinejs.dev/directives/show)"""
+        return self.attributes.get("x-show", None)
+    @x_show.setter
+    def x_show(self, value:str):
+        self.attributes["x-show"] = value
+
+    @property
+    def x_bind(self) -> dict[str, str]:
+        """x-bind allows you to set HTML attributes on elements based on the result of JavaScript expressions. [x-bind](https://alpinejs.dev/directives/bind)"""
+        return self.__json_value("x-bind")
+    @x_bind.setter
+    def x_bind(self, value:dict[str, str]):
+        self.attributes["x-bind"] = value
+
+    def upd_x_bind(self, key_or_tuple_or_dict_or_str, value=None):
+        """
+        Adds one or more attributes to the x-bind attribute (modifying existing dictionary).
+        """
+        return self.__json_upd("x-bind", key_or_tuple_or_dict_or_str, value)
+    
+    def del_x_bind(self, *keys:str):
+        """Removes one or more attributes from the x-bind attribute (modifying existing dictionary)."""
+        for key in keys:
+            self.x_bind.pop(key, None)
+        return self
+
+    @property
+    def x_on(self) -> dict[str, str]:
+        """x-on allows you to easily run code on dispatched DOM events. [x-on](https://alpinejs.dev/directives/on)"""
+        return self.__json_value("x-on")
+    @x_on.setter
+    def x_on(self, value:dict[str, str]):
+        self.attributes["x-on"] = value
+
+    def upd_x_on(self, key_or_tuple_or_dict_or_str, value=None):
+        """
+        Adds one or more events to the x-on attribute (modifying existing dictionary).
+        If given only one argument, it can be a dictionary or a tuple. If it is a string,
+        If given two arguments, the first argument is the key and the second is the value.
+        """
+        html_tag.__update_dict(self.x_on, key_or_tuple_or_dict_or_str, value)
+        return self
+
+    def del_x_on(self, *keys:str):
+        """Removes one or more events from the x-on attribute (modifying existing dictionary). [x-on](https://alpinejs.dev/directives/on)"""
+        for key in keys:
+            self.x_on.pop(key, None)
+        return self
+     
+    @property
+    def x_text(self) -> str:
+        """x-text sets the text content of an element to the result of a given expression. [x-text](https://alpinejs.dev/directives/text)"""
+        return self.attributes.get("x-text", None)
+    @x_text.setter
+    def x_text(self, value:str):
+        self.attributes["x-text"] = value
+
+    @property
+    def x_html(self) -> str:
+        """
+        x-html sets the "innerHTML" property of an element to the result of a given expression.
+        WARNING: Only use on trusted content and never on user-provided content. Dynamically rendering HTML from third parties can easily lead to XSS vulnerabilities.
+        [x-html](https://alpinejs.dev/directives/html)
+        """
+        return self.attributes.get("x-html", None)
+    @x_html.setter
+    def x_html(self, value:str):
+        self.attributes["x-html"] = value
+
+    @property
+    def x_model(self) -> str:
+        """x-model allows you to bind the value of an input element to Alpine data. [x-model](https://alpinejs.dev/directives/model)"""
+        return self.attributes.get("x-model", None)
+    @x_model.setter
+    def x_model(self, value:str):
+        self.attributes["x-model"] = value
+
+    @property
+    def x_modelable(self) -> str:
+        """x-modelable allows you to expose any Alpine property as the target of the x-model directive. [x-modelable](https://alpinejs.dev/directives/modelable)"""
+        return self.attributes.get("x-modelable", None)
+    @x_modelable.setter
+    def x_modelable(self, value:str):
+        self.attributes["x-modelable"] = value
+
+    @property
+    def x_for(self) -> str:
+        """Alpine's x-for directive allows you to create DOM elements by iterating through a list. [x-for](https://alpinejs.dev/directives/for)"""
+        return self.attributes.get("x-for", None)
+    @x_for.setter
+    def x_for(self, value:str):
+        self.attributes["x-for"] = value
+
+    @property
+    def x_transition(self) -> str:
+        """Alpine provides a robust transitions utility out of the box. With a few x-transition directives, you can create smooth transitions between when an element is shown or hidden. [x-transition](https://alpinejs.dev/directives/transition)"""
+        return self.attributes.get("x-transition", None)
+    @x_transition.setter
+    def x_transition(self, value:str):
+        self.attributes["x-transition"] = value
+
+    @property
+    def x_effect(self) -> str:
+        """
+        x-effect is a useful directive for re-evaluating an expression when one of its dependencies change.
+        You can think of it as a watcher where you don't have to specify what property to watch, it will watch all properties used within it.
+        [x-effect](https://alpinejs.dev/directives/effect)
+        """
+        return self.attributes.get("x-effect", None)
+    @x_effect.setter
+    def x_effect(self, value:str):
+        self.attributes["x-effect"] = value
+
+    @property
+    def x_ignore(self) -> str:
+        """
+        By default, Alpine will crawl and initialize the entire DOM tree of an element containing x-init or x-data.
+        If for some reason, you don't want Alpine to touch a specific section of your HTML, you can prevent it from doing so using x-ignore.
+        [x-ignore](https://alpinejs.dev/directives/ignore)
+        """
+        return self.attributes.get("x-ignore", None)
+    @x_ignore.setter
+    def x_ignore(self, value:str):
+        self.attributes["x-ignore"] = value
+
+    @property
+    def x_ref(self) -> str:
+        """
+        x-ref in combination with $refs is a useful utility for easily accessing DOM elements directly. 
+        It's most useful as a replacement for APIs like getElementById and querySelector.
+        [x-ref](https://alpinejs.dev/directives/ref)
+        """
+        return self.attributes.get("x-ref", None)
+    @x_ref.setter
+    def x_ref(self, value:str):
+        self.attributes["x-ref"] = value
+
+    @property
+    def x_cloak(self) -> str:
+        """
+        Sometimes, when you're using AlpineJS for a part of your template, there is a "blip" where you might see your uninitialized template after the page loads, but before Alpine loads.
+        x-cloak addresses this scenario by hiding the element it's attached to until Alpine is fully loaded on the page.
+        [x-cloak](https://alpinejs.dev/directives/cloak)
+        """
+        return self.attributes.get("x-cloak", None)
+    @x_cloak.setter
+    def x_cloak(self, value:str):
+        self.attributes["x-cloak"] = value
+
+    @property
+    def x_teleport(self) -> str:
+        """
+        The x-teleport directive allows you to transport part of your Alpine template to another part of the DOM on the page entirely.
+        This is useful for things like modals (especially nesting them), where it's helpful to break out of the z-index of the current Alpine component.
+        [x-teleport](https://alpinejs.dev/directives/teleport)
+        """
+        return self.attributes.get("x-teleport", None)
+    @x_teleport.setter
+    def x_teleport(self, value:str):
+        self.attributes["x-teleport"] = value
+
+    @property
+    def x_if(self) -> str:
+        """
+        x-if is used for toggling elements on the page, similarly to x-show, however it completely adds and removes the element it's applied to rather than just changing its CSS display property to "none".
+        [x-if](https://alpinejs.dev/directives/if)
+        """
+        return self.attributes.get("x-if", None)
+    @x_if.setter
+    def x_if(self, value:str):
+        self.attributes["x-if"] = value
+
+    @property
+    def x_id(self) -> str:
+        """
+        x-id allows you to declare a new "scope" for any new IDs generated using $id(). It accepts an array of strings (ID names) and adds a suffix to each $id('...') generated within it that is unique to other IDs on the page.
+        x-id is meant to be used in conjunction with the $id(...) magic.
+        [x-id](https://alpinejs.dev/directives/id)
+        """
+        return self.attributes.get("x-id", None)
+    @x_id.setter
+    def x_id(self, value:str):
+        self.attributes["x-id"] = value
+
+
 # Global functions for use inside `with` statements
 
 def add_class(*values:str):
@@ -675,7 +942,7 @@ def del_style(*keys:str):
 
 def upd_hx_on(key_or_tuple_or_dict_or_str, value=None):
     """
-    Adds one or more styles to the hx-on attribute (modifying existing dictionary).
+    Adds one or more events to the hx-on attribute (modifying existing dictionary).
     If given only one argument, it can be a dictionary or a tuple. If it is a string,
     If given two arguments, the first argument is the key and the second is the value.
     """
@@ -683,7 +950,7 @@ def upd_hx_on(key_or_tuple_or_dict_or_str, value=None):
 
 def del_hx_on(*keys:str):
     """
-    Removes one or more styles from the hx-on attribute of the current tag.
+    Removes one or more events from the hx-on attribute of the current tag.
     """
     return get_current().del_hx_on(*keys)
 
@@ -719,6 +986,28 @@ def del_hx_headers(*keys:str):
     """
     return get_current().del_hx_headers(*keys)
     
+def upd_x_bind(key_or_tuple_or_dict_or_str, value=None):
+    """
+    Adds one or more attributes to the x-bind attribute (modifying existing dictionary).
+    """
+    return get_current().upd_x_bind(key_or_tuple_or_dict_or_str, value)
+
+def del_x_bind(*keys:str):
+    """Removes one or more attributes from the x-bind attribute (modifying existing dictionary)."""
+    return get_current().del_x_bind(*keys)
+
+def upd_x_on(key_or_tuple_or_dict_or_str, value=None):
+    """
+    Adds one or more events to the x-on attribute (modifying existing dictionary).
+    If given only one argument, it can be a dictionary or a tuple. If it is a string,
+    If given two arguments, the first argument is the key and the second is the value.
+    """
+    return get_current().upd_x_on(key_or_tuple_or_dict_or_str, value)
+
+def del_x_on(*keys:str):
+    """Removes one or more events from the x-on attribute (modifying existing dictionary). [x-on](https://alpinejs.dev/directives/on)"""
+    return get_current().del_x_on(*keys)
+     
 
 ################################################################################
 ############################### Html Tag Classes ###############################

@@ -19,6 +19,7 @@ Public License along with Dominix.  If not, see
 # pylint: disable=bad-indentation, bad-whitespace, missing-docstring
 
 import copy
+import json
 import numbers
 from collections import defaultdict, namedtuple
 from functools import wraps
@@ -383,6 +384,12 @@ class dom_tag(object):
           value = 'true'
         elif value is False:
           value = 'false'
+      elif attribute == 'x-data':
+        # Special case for x-data
+        if isinstance(value, dict):
+          value = json.dumps(value)
+        else:
+          value = str(value)
       elif value is False:
         continue
       elif value is True:
@@ -474,6 +481,34 @@ class dom_tag(object):
     if attribute.split('_')[0] in ('xlink', 'xml', 'xmlns'):
       # Workaround for colon
       attribute = attribute.replace('_', ':', 1).lower()
+    elif attribute.startswith('x_bind_'):
+      # Workaround for Alpine.js x-bind attribute
+      attribute = "x-bind:" + attribute[7:].replace('_', '-')
+    elif attribute.startswith('x_on_'):
+      # Workaround for Alpine.js x-on attribute
+      attribute = "x-on:" + attribute[5:].replace('_', '-')
+    elif attribute.startswith('x_model_'):
+      # Workaround for Alpine.js x-model attribute
+      attribute = "x-model." + attribute[8:].replace('_', '.')
+    elif attribute.startswith('x_transition'):
+      # Workaround for Alpine.js x-transition attribute
+      if attribute.startswith('x_transition_enter'):
+        if attribute.startswith('x_transition_enter_start'):
+          attribute = "x-transition:enter-start" + attribute[24:]
+        elif attribute.startswith('x_transition_enter_end'):
+          attribute = "x-transition:enter-end" + attribute[22:]
+        else:
+          attribute = "x-transition:enter" + attribute[18:]
+      elif attribute.startswith('x_transition_leave'):
+        if attribute.startswith('x_transition_leave_start'):
+          attribute = "x-transition:leave-start" + attribute[24:]
+        elif attribute.startswith('x_transition_leave_end'):
+          attribute = "x-transition:leave-end" + attribute[22:]
+        else:
+          attribute = "x-transition:leave" + attribute[18:]
+      else:
+        attribute = "x-transition" + attribute[12:]
+      attribute = attribute.replace('_', '.')
     else:
       # Workaround for dash
       attribute = attribute.replace('_', '-')

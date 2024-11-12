@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dominix"
-description = "Dominix is a fork of Dominate that adds support for HTMX. (Dominate is a Python library for creating and manipulating HTML documents using an elegant DOM API.)"
+description = "Dominix is a fork of Dominate that adds support for HTMX and Alpine.js. (Dominate is a Python library for creating and manipulating HTML documents using an elegant DOM API.)"
 readme = {file = "README.md", content-type = "text/markdown"}
 authors = [
     {name = "Tom Flanagan"},

@@ -12,7 +12,7 @@ from dominix.tags import *
 HTMX support
 ------------
 
-The most important difference from Dominate is of course the support for HTMX. All HTMX attributes are 
+Dominate introduces support for HTMX. All HTMX attributes are 
 available as named arguments and properties, including docstrings. This provides code completion and better IDE support.
 
 ![Screen shot](https://raw.githubusercontent.com/aremeis/dominix/master/img/screenshot-1.png)
@@ -170,4 +170,62 @@ The result of `my_section().render()`: is the same in both cases:
 <div hx-get="/my/endpoint">
     <h1>Chained</h1>
 </div>
+```
+
+
+Alpine.js support
+------------------
+
+Support for Alpine.js attributes is also available since version 2.0.0 and follows the same pattern as HTMX.
+Use the `x_` prefix for all Alpine.js attributes. In cases where an attribute would contain `-`, `.` or `:` in its name, 
+the corresponding Pythonargument will have these characters replaced with `_`. Some examples:
+
+* `x-bind:placeholder` -> `x_bind_placeholder`
+* `x-model:lazy` -> `x_model_lazy`
+* `x-transition:enter-start` -> `x_transition_enter_start`
+* `x-transition:enter.scale.80` -> `x_transition_enter_scale_80`
+
+
+### Special attributes
+
+The fattributes `x-bind` and `x-on` have special implementation to provide better developer experience, similar to `hx-on`.
+
+#### Attribute `x-on`
+
+HTML:
+```html
+<div x-on:click="alert()">Click</div>
+```
+
+Dominix:
+```python
+# Alternative 1
+tag = div(x_on={"click": "alert()"})
+
+# Alternative 2
+tag = div()
+tag.x_on["click"] = "alert()"
+
+# Alternative 3
+tag = div(x_on_click="alert()")
+```
+
+#### Attribute `x-bind`
+
+HTML:
+```html
+<div x-bind:placeholder="foo">Click</div>
+```
+
+Dominix:
+```python
+# Alternative 1
+tag = div(x_bind={"placeholder": "foo"})
+
+# Alternative 2
+tag = div()
+tag.x_bind["placeholder"] = "foo"
+
+# Alternative 3
+tag = div(x_bind_placeholder="foo")
 ```
