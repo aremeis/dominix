@@ -1680,6 +1680,56 @@ class font(html_tag):
   pass
 
 
+class dialog(html_tag):
+  '''
+  The <dialog> HTML element represents a modal or non-modal dialog box or other 
+  interactive component, such as a dismissible alert, inspector, or subwindow.
+  '''
+  pass
+
+
+class picture(html_tag):
+  '''
+  Contains zero or more <source> elements and one <img> element to offer alternative 
+  versions of an image for different display/device scenarios.
+  '''
+  pass
+
+
+class search(html_tag):
+  '''
+  Represents a part that contains a set of form controls or other content related to 
+  performing a search or filtering operation.
+  '''
+  pass
+
+
+class slot(html_tag):
+  '''
+  Part of the Web Components technology suite, this element is a placeholder inside a 
+  web component that you can fill with your own markup, which lets you create separate 
+  DOM trees and present them together.
+  '''
+  pass
+
+
+class small(html_tag):
+  '''
+  Represents side-comments and small print, like copyright and legal text, independent 
+  of its styled presentation. By default, it renders text within it one font size 
+  smaller, such as from small to x-small.
+  '''
+  pass
+
+
+class template(html_tag):
+  '''
+  A mechanism for holding HTML that is not to be rendered immediately when a page is 
+  loaded but may be instantiated subsequently during runtime using JavaScript.
+  '''
+  pass
+
+
 # Additional markup
 class comment(html_tag):
   '''
